@@ -1,0 +1,13 @@
+[package]
+name = "domain"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+uuid = { version = "1.7.0", features = ["v4", "serde"] }
+chrono = { version = "0.4.34", features = ["serde"] }
+serde = { version = "1.0.196", features = ["derive"] }
+
+[[example]]
+name = "product_backlog_example"
+path = "examples/product_backlog_example.rs"
