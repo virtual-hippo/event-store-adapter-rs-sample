@@ -1,12 +1,13 @@
 [package]
 name = "command-domain"
-version = "0.1.0"
-edition = "2024"
+version.workspace = true
+edition.workspace = true
+description = "Domain models for the command side of the application"
 
 [dependencies]
-uuid = { version = "1.7.0", features = ["v4", "serde"] }
-chrono = { version = "0.4.34", features = ["serde"] }
-serde = { version = "1.0.196", features = ["derive"] }
+uuid.workspace = true
+chrono.workspace = true
+serde.workspace = true
 
 [[example]]
 name = "product_backlog_example"

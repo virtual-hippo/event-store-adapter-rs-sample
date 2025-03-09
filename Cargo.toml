@@ -5,3 +5,18 @@ members = [
     "aws-lambda-functions",
     "modules/command/domain",
 ]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+authors = ["Your Name <your.email@example.com>"]
+description = "Event Store Adapter RS Sample"
+license = "MIT"
+repository = "https://github.com/yourusername/event-store-adapter-rs-sample"
+
+[workspace.dependencies]
+uuid = { version = "1.7.0", features = ["v4", "serde"] }
+chrono = { version = "0.4.34", features = ["serde"] }
+serde = { version = "1.0.196", features = ["derive"] }
+tokio = { version = "1", features = ["macros"] }
+lambda_http = "0.13.0"

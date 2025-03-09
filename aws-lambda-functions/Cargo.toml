@@ -1,9 +1,9 @@
 [package]
 name = "aws-lambda-functions"
-version = "0.1.0"
-edition = "2021"
+version.workspace = true
+edition.workspace = true
+description = "AWS Lambda functions for the Event Store Adapter"
 
 [dependencies]
-lambda_http = "0.13.0"
-
-tokio = { version = "1", features = ["macros"] }
+lambda_http.workspace = true
+tokio.workspace = true
