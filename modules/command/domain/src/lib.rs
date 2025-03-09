@@ -3,7 +3,7 @@
 Cline + Bedrock Claude 3.7 Sonet で生成.
 与えたプロンプトは以下.
 
-```
+```md
 # Task
 アジャイル開発におけるプロダクトバックログのドメインモデリングをしてください．
 
@@ -15,16 +15,9 @@ Cline + Bedrock Claude 3.7 Sonet で生成.
 ```
 
  */
-mod acceptance_criterion;
-mod backlog_item;
-mod epic;
-mod product_backlog;
-mod sprint;
-mod types;
-
-pub use acceptance_criterion::AcceptanceCriterion;
-pub use backlog_item::BacklogItem;
-pub use epic::Epic;
-pub use product_backlog::ProductBacklog;
-pub use sprint::Sprint;
-pub use types::{Priority, Status};
+pub mod acceptance_criterion;
+pub mod backlog_item;
+pub mod epic;
+pub mod product_backlog;
+pub mod sprint;
+pub mod types;

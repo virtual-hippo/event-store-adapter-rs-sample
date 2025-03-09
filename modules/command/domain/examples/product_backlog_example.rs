@@ -1,5 +1,12 @@
 use chrono::{Duration, Utc};
-use domain::{AcceptanceCriterion, BacklogItem, Epic, Priority, ProductBacklog, Sprint, Status};
+use command_domain::{
+    acceptance_criterion::AcceptanceCriterion,
+    backlog_item::BacklogItem,
+    epic::Epic,
+    product_backlog::ProductBacklog,
+    sprint::Sprint,
+    types::{Priority, Status},
+};
 
 fn main() {
     // プロダクトバックログの作成
