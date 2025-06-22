@@ -5,3 +5,22 @@ members = [
     "aws-lambda-functions",
     "modules/command/domain",
 ]
+
+[workspace.dependencies]
+anyhow = "1.0.98"
+thiserror = "2.0.12"
+async-trait = "0.1.88"
+
+chrono = "0.4.41"
+downcast-rs = "2.0.1"
+itertools = "0.14.0"
+log = "0.4.27"
+once_cell = "1.21.3"
+serde = "1.0.219"
+serde_json = "1.0.140"
+
+tracing = "0.1.41"
+
+
+ulid-generator-rs = "0.0.112"
+event-store-adapter-rs = "1.1.47"
