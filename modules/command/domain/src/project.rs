@@ -2,10 +2,18 @@ use chrono::{DateTime, Utc};
 use event_store_adapter_rs::types::Aggregate;
 use serde::{Deserialize, Serialize};
 
+mod member;
+mod member_id;
+mod member_role;
+mod members;
 mod project_events;
 mod project_id;
 mod project_name;
 
+pub use crate::project::member::Member;
+pub use crate::project::member_id::MemberId;
+pub use crate::project::member_role::MemberRole;
+pub use crate::project::members::Members;
 pub use crate::project::project_events::{ProjectEvent, ProjectEventCreatedBody};
 pub use crate::project::project_id::ProjectId;
 pub use crate::project::project_name::ProjectName;

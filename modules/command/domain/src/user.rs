@@ -1,6 +1,6 @@
 mod user_error;
 mod user_events;
-mod user_id;
+pub mod user_id;
 mod user_name;
 
 use chrono::{DateTime, Utc};
@@ -56,15 +56,6 @@ impl Aggregate for User {
 }
 
 impl User {
-    /// コンストラクタ
-    ///
-    /// # 引数
-    /// - `user_name` - ユーザー名
-    /// - `password` - パスワード
-    ///
-    /// # 戻り値
-    /// - `User` - ユーザー
-    /// - `UserEvent` - ユーザーイベント
     pub fn new(user_name: UserName, email: Email) -> (Self, UserEvent) {
         let id = UserId::default();
         Self::from(id, false, user_name, email, 0, 1)
