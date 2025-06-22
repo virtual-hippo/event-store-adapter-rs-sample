@@ -266,5 +266,118 @@ impl Project {
 
 #[cfg(test)]
 mod tests {
-    // TODO: implement tests for Project
+    use super::*;
+
+    #[test]
+    fn test_delete_project() {
+        let executor_id = UserId::default();
+        let user_id = UserId::default();
+        let mut members = Members::new();
+        members.add_member(Member::new(
+            MemberId::new(),
+            executor_id.clone(),
+            MemberRole::Admin,
+        ));
+
+        let (mut project, _) = Project::new(
+            ProjectName::new("Test").unwrap(),
+            members,
+            executor_id.clone(),
+        );
+
+        let result = project.delete(user_id.clone());
+        assert!(result.is_err());
+
+        let result = project.delete(executor_id.clone());
+        assert!(result.is_ok());
+    }
+
+    #[test]
+    fn test_add_member() {
+        let executor_id = UserId::default();
+        let user_id = UserId::default();
+        let member_id = MemberId::new();
+        let mut members = Members::new();
+        members.add_member(Member::new(
+            MemberId::new(),
+            executor_id.clone(),
+            MemberRole::Admin,
+        ));
+
+        let (mut project, _) = Project::new(
+            ProjectName::new("Test").unwrap(),
+            members,
+            executor_id.clone(),
+        );
+
+        let _ = project
+            .add_member(
+                member_id,
+                user_id.clone(),
+                MemberRole::Member,
+                executor_id.clone(),
+            )
+            .unwrap();
+
+        assert!(project.members().is_member(&user_id));
+    }
+
+    #[test]
+    fn test_remove_member() {
+        let executor_id = UserId::default();
+        let user_id = UserId::default();
+        let member_id = MemberId::new();
+        let mut members = Members::new();
+        members.add_member(Member::new(
+            MemberId::new(),
+            executor_id.clone(),
+            MemberRole::Admin,
+        ));
+
+        let (mut project, _) = Project::new(
+            ProjectName::new("Test").unwrap(),
+            members,
+            executor_id.clone(),
+        );
+
+        let _ = project
+            .add_member(
+                member_id,
+                user_id.clone(),
+                MemberRole::Member,
+                executor_id.clone(),
+            )
+            .unwrap();
+        let _ = project.remove_member(user_id.clone(), executor_id.clone()).unwrap();
+
+        assert!(!project.members().is_member(&user_id));
+    }
+
+    #[test]
+    fn test_to_json() {
+        let executor_id = UserId::default();
+        let project_name = ProjectName::new("test").unwrap();
+        let mut members = Members::new();
+        members.add_member(Member::new(
+            MemberId::new(),
+            executor_id.clone(),
+            MemberRole::Admin,
+        ));
+
+        let (mut project, _) = Project::new(project_name.clone(), members, executor_id.clone());
+        assert_eq!(project.name, project_name);
+
+        let _ = project
+            .add_member(
+                MemberId::new(),
+                UserId::default(),
+                MemberRole::Member,
+                executor_id.clone(),
+            )
+            .unwrap();
+
+        let json = serde_json::to_string(&project).unwrap();
+        println!("{}", json);
+        assert!(!json.is_empty());
+    }
 }
