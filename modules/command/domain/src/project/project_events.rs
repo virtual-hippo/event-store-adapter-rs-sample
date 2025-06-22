@@ -4,8 +4,11 @@ use serde::{Deserialize, Serialize};
 use ulid_generator_rs::ULID;
 
 use crate::helper::id_generate;
+use crate::project::Member;
+use crate::project::Members;
 use crate::project::ProjectId;
 use crate::project::ProjectName;
+pub use crate::user::user_id::UserId;
 
 pub type ProjectEventId = ULID;
 
@@ -17,6 +20,10 @@ pub enum ProjectEvent {
     ProjectCreated(ProjectEventCreatedBody),
     /// プロジェクトが削除された
     ProjectDeleted(ProjectEventDeletedBody),
+    /// プロジェクトにメンバーが追加された
+    ProjectMemberAdded(ProjectEventMemberAddedBody),
+    /// プロジェクトのメンバーが削除された
+    ProjectMemberRemoved(ProjectEventMemberRemovedBody),
 }
 
 impl Event for ProjectEvent {
@@ -27,6 +34,8 @@ impl Event for ProjectEvent {
         match self {
             ProjectEvent::ProjectCreated(event) => &event.id,
             ProjectEvent::ProjectDeleted(event) => &event.id,
+            ProjectEvent::ProjectMemberAdded(event) => &event.id,
+            ProjectEvent::ProjectMemberRemoved(event) => &event.id,
         }
     }
 
@@ -34,6 +43,8 @@ impl Event for ProjectEvent {
         match self {
             ProjectEvent::ProjectCreated(event) => event.seq_nr,
             ProjectEvent::ProjectDeleted(event) => event.seq_nr,
+            ProjectEvent::ProjectMemberAdded(event) => event.seq_nr,
+            ProjectEvent::ProjectMemberRemoved(event) => event.seq_nr,
         }
     }
 
@@ -41,6 +52,8 @@ impl Event for ProjectEvent {
         match self {
             ProjectEvent::ProjectCreated(event) => &event.aggregate_id,
             ProjectEvent::ProjectDeleted(event) => &event.aggregate_id,
+            ProjectEvent::ProjectMemberAdded(event) => &event.aggregate_id,
+            ProjectEvent::ProjectMemberRemoved(event) => &event.aggregate_id,
         }
     }
 
@@ -48,6 +61,8 @@ impl Event for ProjectEvent {
         match self {
             ProjectEvent::ProjectCreated(event) => &event.occurred_at,
             ProjectEvent::ProjectDeleted(event) => &event.occurred_at,
+            ProjectEvent::ProjectMemberAdded(event) => &event.occurred_at,
+            ProjectEvent::ProjectMemberRemoved(event) => &event.occurred_at,
         }
     }
 
@@ -65,18 +80,25 @@ pub struct ProjectEventCreatedBody {
     pub aggregate_id: ProjectId,
     pub seq_nr: usize,
     pub name: ProjectName,
+    pub members: Members,
     pub occurred_at: DateTime<Utc>,
 }
 
 impl ProjectEventCreatedBody {
-    pub fn new(aggregate_id: ProjectId, seq_nr: usize, name: ProjectName) -> Self {
+    pub fn new(
+        aggregate_id: ProjectId,
+        seq_nr: usize,
+        name: ProjectName,
+        members: Members,
+        occurred_at: DateTime<Utc>,
+    ) -> Self {
         let id = id_generate();
-        let occurred_at = Utc::now();
         Self {
             id,
             aggregate_id,
             seq_nr,
             name,
+            members,
             occurred_at,
         }
     }
@@ -98,17 +120,85 @@ impl ProjectEventDeletedBody {
     }
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ProjectEventMemberAddedBody {
+    pub id: ProjectEventId,
+    pub aggregate_id: ProjectId,
+    pub seq_nr: usize,
+    pub member: Member,
+    pub executor_id: UserId,
+    pub occurred_at: DateTime<Utc>,
+}
+
+impl ProjectEventMemberAddedBody {
+    pub fn new(
+        aggregate_id: ProjectId,
+        seq_nr: usize,
+        member: Member,
+        executor_id: UserId,
+        occurred_at: DateTime<Utc>,
+    ) -> Self {
+        let id = id_generate();
+        Self {
+            id,
+            aggregate_id,
+            seq_nr,
+            member,
+            executor_id,
+            occurred_at,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ProjectEventMemberRemovedBody {
+    pub(crate) id: ProjectEventId,
+    pub aggregate_id: ProjectId,
+    pub(crate) seq_nr: usize,
+    pub user_id: UserId,
+    pub(crate) executor_id: UserId,
+    pub(crate) occurred_at: DateTime<Utc>,
+}
+
+impl ProjectEventMemberRemovedBody {
+    pub fn new(
+        aggregate_id: ProjectId,
+        seq_nr: usize,
+        user_id: UserId,
+        executor_id: UserId,
+        occurred_at: DateTime<Utc>,
+    ) -> Self {
+        let id = id_generate();
+        Self {
+            id,
+            aggregate_id,
+            seq_nr,
+            user_id,
+            executor_id,
+            occurred_at,
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use crate::project::project_events::{ProjectEvent, ProjectEventCreatedBody};
-    use crate::project::{ProjectId, ProjectName};
+    use crate::project::{Members, ProjectId, ProjectName};
+    use chrono::Utc;
     use event_store_adapter_rs::types::Event;
 
     #[test]
     fn test_to_json() {
         let project_id = ProjectId::new();
         let project = ProjectName::new("test").unwrap();
-        let event = ProjectEvent::ProjectCreated(ProjectEventCreatedBody::new(project_id, 1usize, project));
+        let now = Utc::now();
+        let event = ProjectEvent::ProjectCreated(ProjectEventCreatedBody::new(
+            project_id,
+            1usize,
+            project,
+            Members::default(),
+            now,
+        ));
         let json = serde_json::to_string(&event);
         let _occurred_at = event.occurred_at().timestamp_millis();
         println!("{}", json.unwrap());

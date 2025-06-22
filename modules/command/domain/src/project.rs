@@ -24,6 +24,7 @@ pub struct Project {
     id: ProjectId,
     deleted: bool,
     name: ProjectName,
+    members: Members,
     version: usize,
     seq_nr_counter: usize,
     last_updated_at: DateTime<Utc>,
@@ -60,31 +61,36 @@ impl Aggregate for Project {
 }
 
 impl Project {
-    pub fn new(name: ProjectName) -> (Self, ProjectEvent) {
+    pub fn new(name: ProjectName, members: Members) -> (Self, ProjectEvent) {
         let id = ProjectId::new();
-        Self::from(id, false, name, 0, 1)
+        Self::from(id, false, name, members, 0, 1)
     }
 
     pub fn from(
         id: ProjectId,
         deleted: bool,
         name: ProjectName,
+        members: Members,
         seq_nr_counter: usize,
         version: usize,
     ) -> (Self, ProjectEvent) {
+        let now = Utc::now();
         let mut my_self = Self {
             id: id.clone(),
             deleted,
             name: name.clone(),
+            members: members.clone(),
             seq_nr_counter,
             version,
-            last_updated_at: Utc::now(),
+            last_updated_at: now,
         };
         my_self.seq_nr_counter += 1;
         let event = ProjectEvent::ProjectCreated(ProjectEventCreatedBody::new(
             id,
             my_self.seq_nr_counter,
             name,
+            members,
+            now,
         ));
         (my_self, event)
     }
