@@ -15,7 +15,7 @@ pub type ProjectEventId = ULID;
 pub enum ProjectEvent {
     /// プロジェクトが作成された
     ProjectCreated(ProjectEventCreatedBody),
-    /// グループチャットが削除された
+    /// プロジェクトが削除された
     ProjectDeleted(ProjectEventDeletedBody),
 }
 
