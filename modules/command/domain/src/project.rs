@@ -16,7 +16,10 @@ pub use crate::project::member_id::MemberId;
 pub use crate::project::member_role::MemberRole;
 pub use crate::project::members::Members;
 pub use crate::project::project_error::ProjectError;
-pub use crate::project::project_events::{ProjectEvent, ProjectEventCreatedBody, ProjectEventDeletedBody};
+pub use crate::project::project_events::{
+    ProjectEvent, ProjectEventCreatedBody, ProjectEventDeletedBody, ProjectEventMemberAddedBody,
+    ProjectEventMemberRemovedBody,
+};
 pub use crate::project::project_id::ProjectId;
 pub use crate::project::project_name::ProjectName;
 pub use crate::user::user_id::UserId;
@@ -138,7 +141,7 @@ impl Project {
     /// プロジェクトを削除する
     ///
     /// # 引数
-    /// - executor_id: 実行者のユーザアカウントID
+    /// - executor_id: 実行者のユーザID
     ///
     /// # 戻り値
     /// - プロジェクトが削除されている場合はエラーを返す。
@@ -163,6 +166,95 @@ impl Project {
             executor_id,
             now,
         )))
+    }
+
+    /// プロジェクトにメンバーを追加する
+    ///
+    /// # 引数
+    /// - member_id: メンバーID
+    /// - user_id: ユーザID
+    /// - role: メンバーの役割
+    /// - executor_id: 実行者のユーザID
+    ///
+    /// # 戻り値
+    /// - プロジェクトが削除されている場合はエラーを返す。
+    /// - 実行者が管理者でない場合はエラーを返す。
+    /// - ユーザIDが既にメンバーに設定されている場合はエラーを返す。
+    /// - 成功した場合は、ProjectMemberAddedイベントを返す。
+    pub fn add_member(
+        &mut self,
+        member_id: MemberId,
+        user_id: UserId,
+        role: MemberRole,
+        executor_id: UserId,
+    ) -> Result<ProjectEvent, ProjectError> {
+        if self.deleted {
+            return Err(ProjectError::AlreadyDeletedError(self.id.clone()));
+        }
+        if !self.members.is_administrator(&executor_id) {
+            return Err(ProjectError::NotAdministratorError(
+                "executor_id".to_string(),
+                executor_id,
+            ));
+        }
+        if self.members.is_member(&user_id) {
+            return Err(ProjectError::AlreadyMemberError(
+                "user_id".to_string(),
+                user_id,
+            ));
+        }
+        let member = Member::new(member_id, user_id, role);
+        self.members.add_member(member.clone());
+        self.seq_nr_counter += 1;
+        let now = Utc::now();
+        Ok(ProjectEvent::ProjectMemberAdded(
+            ProjectEventMemberAddedBody::new(
+                self.id.clone(),
+                self.seq_nr_counter,
+                member,
+                executor_id,
+                now,
+            ),
+        ))
+    }
+
+    /// プロジェクトからメンバーを削除する
+    ///
+    /// # 引数
+    /// - user_id: ユーザID
+    /// - executor_id: 実行者のユーザID
+    ///
+    /// # 戻り値
+    /// - プロジェクトが削除されている場合はエラーを返す。
+    /// - 実行者が管理者でない場合はエラーを返す。
+    /// - ユーザIDがメンバーに設定されていない場合はエラーを返す。
+    /// - 成功した場合は、ProjectMemberRemovedイベントを返す。
+    pub fn remove_member(&mut self, user_id: UserId, executor_id: UserId) -> Result<ProjectEvent, ProjectError> {
+        if self.deleted {
+            return Err(ProjectError::AlreadyDeletedError(self.id.clone()));
+        }
+        if !self.members.is_administrator(&executor_id) {
+            return Err(ProjectError::NotAdministratorError(
+                "executor_id".to_string(),
+                executor_id,
+            ));
+        }
+        if !self.members.is_member(&user_id) {
+            return Err(ProjectError::NotMemberError("user_id".to_string(), user_id));
+        }
+
+        self.members.remove_member_by_user_id(&user_id);
+        self.seq_nr_counter += 1;
+        let now = Utc::now();
+        Ok(ProjectEvent::ProjectMemberRemoved(
+            ProjectEventMemberRemovedBody::new(
+                self.id.clone(),
+                self.seq_nr_counter,
+                user_id,
+                executor_id,
+                now,
+            ),
+        ))
     }
 }
 
