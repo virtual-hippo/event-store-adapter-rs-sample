@@ -274,7 +274,7 @@ mod tests {
         let user_id = UserId::default();
         let mut members = Members::new();
         members.add_member(Member::new(
-            MemberId::new(),
+            MemberId::default(),
             executor_id.clone(),
             MemberRole::Admin,
         ));
@@ -296,10 +296,10 @@ mod tests {
     fn test_add_member() {
         let executor_id = UserId::default();
         let user_id = UserId::default();
-        let member_id = MemberId::new();
+        let member_id = MemberId::default();
         let mut members = Members::new();
         members.add_member(Member::new(
-            MemberId::new(),
+            MemberId::default(),
             executor_id.clone(),
             MemberRole::Admin,
         ));
@@ -326,10 +326,10 @@ mod tests {
     fn test_remove_member() {
         let executor_id = UserId::default();
         let user_id = UserId::default();
-        let member_id = MemberId::new();
+        let member_id = MemberId::default();
         let mut members = Members::new();
         members.add_member(Member::new(
-            MemberId::new(),
+            MemberId::default(),
             executor_id.clone(),
             MemberRole::Admin,
         ));
@@ -359,7 +359,7 @@ mod tests {
         let project_name = ProjectName::new("test").unwrap();
         let mut members = Members::new();
         members.add_member(Member::new(
-            MemberId::new(),
+            MemberId::default(),
             executor_id.clone(),
             MemberRole::Admin,
         ));
@@ -369,7 +369,7 @@ mod tests {
 
         let _ = project
             .add_member(
-                MemberId::new(),
+                MemberId::default(),
                 UserId::default(),
                 MemberRole::Member,
                 executor_id.clone(),
