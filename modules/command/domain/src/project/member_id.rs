@@ -15,6 +15,12 @@ impl MemberId {
     }
 }
 
+impl Default for MemberId {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl Display for MemberId {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", self.0)
