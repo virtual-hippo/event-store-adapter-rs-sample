@@ -12,6 +12,13 @@ pub struct ProjectId {
 
 const PROJECT_PREFIX: &str = "Project";
 
+impl ProjectId {
+    pub fn new() -> Self {
+        let value = id_generate();
+        Self { value }
+    }
+}
+
 impl AggregateId for ProjectId {
     fn type_name(&self) -> String {
         PROJECT_PREFIX.to_string()
@@ -22,10 +29,9 @@ impl AggregateId for ProjectId {
     }
 }
 
-impl ProjectId {
-    pub fn new() -> Self {
-        let value = id_generate();
-        Self { value }
+impl Default for ProjectId {
+    fn default() -> Self {
+        Self::new()
     }
 }
 
