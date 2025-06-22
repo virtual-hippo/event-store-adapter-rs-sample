@@ -1,8 +1,6 @@
 use chrono::{DateTime, Utc};
 use event_store_adapter_rs::types::Aggregate;
 use serde::{Deserialize, Serialize};
-use thiserror::Error;
-use ulid_generator_rs::ULIDError;
 
 mod project_events;
 mod project_id;
@@ -11,12 +9,6 @@ mod project_name;
 pub use crate::project::project_events::{ProjectEvent, ProjectEventCreatedBody};
 pub use crate::project::project_id::ProjectId;
 pub use crate::project::project_name::ProjectName;
-
-#[derive(Debug, Clone, Error)]
-pub enum ParseError {
-    #[error("invalid ULID format: {0}")]
-    InvalidULID(#[from] ULIDError),
-}
 
 // Serialize, Deserialize はドメインモデルに実装しないようにしたい
 #[derive(Debug, Clone, Serialize, Deserialize)]
