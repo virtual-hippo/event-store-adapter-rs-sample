@@ -105,14 +105,20 @@ impl Project {
 
     fn apply_event(&mut self, event: &ProjectEvent) {
         match event {
-            ProjectEvent::ProjectDeleted(_) => {
-                todo!("Implement Project Deleted Event");
+            ProjectEvent::ProjectDeleted(body) => {
+                self.delete(body.executor_id.clone()).unwrap();
             },
             ProjectEvent::ProjectMemberAdded(body) => {
-                todo!("Implement Project Member Added Event");
+                self.add_member(
+                    body.member.breach_encapsulation_of_id().clone(),
+                    body.member.breach_encapsulation_of_user_id().clone(),
+                    body.member.breach_encapsulation_of_role().clone(),
+                    body.executor_id.clone(),
+                )
+                .unwrap();
             },
             ProjectEvent::ProjectMemberRemoved(body) => {
-                todo!("Implement Project Member Removed Event");
+                self.remove_member(body.user_id.clone(), body.executor_id.clone()).unwrap();
             },
             _ => {},
         }
