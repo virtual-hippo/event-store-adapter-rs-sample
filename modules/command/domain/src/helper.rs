@@ -20,7 +20,7 @@ impl ULIDGeneratorState {
 
 static ID_GENERATOR_STATE: Lazy<Mutex<ULIDGeneratorState>> = Lazy::new(|| Mutex::new(ULIDGeneratorState::new()));
 
-/// 初回以降の採番が衝突しない単調増加するIDを生成する。
+/// 初回以降の採番が衝突しない単調増加するIDを生成する
 pub fn id_generate() -> ULID {
     let mut state = ID_GENERATOR_STATE.lock().unwrap();
     match state.last_id {
@@ -41,4 +41,6 @@ pub fn id_generate() -> ULID {
 pub enum ParseError {
     #[error("invalid ULID format: {0}")]
     InvalidULID(#[from] ULIDError),
+    #[error("invalid Member Role: {0}")]
+    InvalidMemberRole(String),
 }
