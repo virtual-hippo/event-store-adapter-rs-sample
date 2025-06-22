@@ -81,6 +81,7 @@ pub struct ProjectEventCreatedBody {
     pub seq_nr: usize,
     pub name: ProjectName,
     pub members: Members,
+    pub executor_id: UserId,
     pub occurred_at: DateTime<Utc>,
 }
 
@@ -90,6 +91,7 @@ impl ProjectEventCreatedBody {
         seq_nr: usize,
         name: ProjectName,
         members: Members,
+        executor_id: UserId,
         occurred_at: DateTime<Utc>,
     ) -> Self {
         let id = id_generate();
@@ -99,6 +101,7 @@ impl ProjectEventCreatedBody {
             seq_nr,
             name,
             members,
+            executor_id,
             occurred_at,
         }
     }
@@ -109,14 +112,20 @@ pub struct ProjectEventDeletedBody {
     pub id: ProjectEventId,
     pub aggregate_id: ProjectId,
     pub seq_nr: usize,
+    pub executor_id: UserId,
     pub occurred_at: DateTime<Utc>,
 }
 
 impl ProjectEventDeletedBody {
-    pub fn new(aggregate_id: ProjectId, seq_nr: usize) -> Self {
+    pub fn new(aggregate_id: ProjectId, seq_nr: usize, executor_id: UserId, occurred_at: DateTime<Utc>) -> Self {
         let id = id_generate();
-        let occurred_at = Utc::now();
-        Self { id, aggregate_id, seq_nr, occurred_at }
+        Self {
+            id,
+            aggregate_id,
+            seq_nr,
+            executor_id,
+            occurred_at,
+        }
     }
 }
 
@@ -184,19 +193,22 @@ impl ProjectEventMemberRemovedBody {
 mod tests {
     use crate::project::project_events::{ProjectEvent, ProjectEventCreatedBody};
     use crate::project::{Members, ProjectId, ProjectName};
+    use crate::user::user_id::UserId;
     use chrono::Utc;
     use event_store_adapter_rs::types::Event;
 
     #[test]
     fn test_to_json() {
-        let project_id = ProjectId::new();
+        let project_id = ProjectId::default();
         let project = ProjectName::new("test").unwrap();
+        let user_id = UserId::default();
         let now = Utc::now();
         let event = ProjectEvent::ProjectCreated(ProjectEventCreatedBody::new(
             project_id,
             1usize,
             project,
             Members::default(),
+            user_id,
             now,
         ));
         let json = serde_json::to_string(&event);

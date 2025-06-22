@@ -6,6 +6,7 @@ mod member;
 mod member_id;
 mod member_role;
 mod members;
+mod project_error;
 mod project_events;
 mod project_id;
 mod project_name;
@@ -14,9 +15,11 @@ pub use crate::project::member::Member;
 pub use crate::project::member_id::MemberId;
 pub use crate::project::member_role::MemberRole;
 pub use crate::project::members::Members;
-pub use crate::project::project_events::{ProjectEvent, ProjectEventCreatedBody};
+pub use crate::project::project_error::ProjectError;
+pub use crate::project::project_events::{ProjectEvent, ProjectEventCreatedBody, ProjectEventDeletedBody};
 pub use crate::project::project_id::ProjectId;
 pub use crate::project::project_name::ProjectName;
+pub use crate::user::user_id::UserId;
 
 // Serialize, Deserialize はドメインモデルに実装しないようにしたい
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -61,9 +64,9 @@ impl Aggregate for Project {
 }
 
 impl Project {
-    pub fn new(name: ProjectName, members: Members) -> (Self, ProjectEvent) {
+    pub fn new(name: ProjectName, members: Members, executor_id: UserId) -> (Self, ProjectEvent) {
         let id = ProjectId::new();
-        Self::from(id, false, name, members, 0, 1)
+        Self::from(id, false, name, members, 0, 1, executor_id)
     }
 
     pub fn from(
@@ -73,6 +76,7 @@ impl Project {
         members: Members,
         seq_nr_counter: usize,
         version: usize,
+        executor_id: UserId,
     ) -> (Self, ProjectEvent) {
         let now = Utc::now();
         let mut my_self = Self {
@@ -90,9 +94,75 @@ impl Project {
             my_self.seq_nr_counter,
             name,
             members,
+            executor_id,
             now,
         ));
         (my_self, event)
+    }
+
+    fn apply_event(&mut self, event: &ProjectEvent) {
+        match event {
+            ProjectEvent::ProjectDeleted(_) => {
+                todo!("Implement Project Deleted Event");
+            },
+            ProjectEvent::ProjectMemberAdded(body) => {
+                todo!("Implement Project Member Added Event");
+            },
+            ProjectEvent::ProjectMemberRemoved(body) => {
+                todo!("Implement Project Member Removed Event");
+            },
+            _ => {},
+        }
+    }
+
+    pub fn replay(events: &Vec<ProjectEvent>, snapshot: Project) -> Self {
+        log::debug!("event.size = {}", events.len());
+        events.iter().fold(snapshot, |mut result, event| {
+            log::debug!("Replaying snapshot: {:?}", result);
+            log::debug!("Replaying event: {:?}", event);
+            result.apply_event(event);
+            result
+        })
+    }
+
+    /// [ProjectName]の参照を返す。
+    pub fn name(&self) -> &ProjectName {
+        &self.name
+    }
+
+    /// [Members]の参照を返す
+    pub fn members(&self) -> &Members {
+        &self.members
+    }
+
+    /// プロジェクトを削除する
+    ///
+    /// # 引数
+    /// - executor_id: 実行者のユーザアカウントID
+    ///
+    /// # 戻り値
+    /// - プロジェクトが削除されている場合はエラーを返す。
+    /// - 実行者が管理者でない場合はエラーを返す。
+    /// - 成功した場合は、ProjectDeletedイベントを返す。
+    pub fn delete(&mut self, executor_id: UserId) -> Result<ProjectEvent, ProjectError> {
+        if self.deleted {
+            return Err(ProjectError::AlreadyDeletedError(self.id.clone()));
+        }
+        if !self.members.is_administrator(&executor_id) {
+            return Err(ProjectError::NotAdministratorError(
+                "executor_id".to_string(),
+                executor_id,
+            ));
+        }
+        self.deleted = true;
+        self.seq_nr_counter += 1;
+        let now = Utc::now();
+        Ok(ProjectEvent::ProjectDeleted(ProjectEventDeletedBody::new(
+            self.id.clone(),
+            self.seq_nr_counter,
+            executor_id,
+            now,
+        )))
     }
 }
 
