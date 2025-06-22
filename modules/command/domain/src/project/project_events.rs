@@ -67,10 +67,7 @@ impl Event for ProjectEvent {
     }
 
     fn is_created(&self) -> bool {
-        match self {
-            ProjectEvent::ProjectCreated(_) => true,
-            _ => false,
-        }
+        matches!(self, ProjectEvent::ProjectCreated(_))
     }
 }
 
@@ -192,27 +189,46 @@ impl ProjectEventMemberRemovedBody {
 #[cfg(test)]
 mod tests {
     use crate::project::project_events::{ProjectEvent, ProjectEventCreatedBody};
-    use crate::project::{Members, ProjectId, ProjectName};
+    use crate::project::{Members, ProjectEventDeletedBody, ProjectId, ProjectName};
     use crate::user::user_id::UserId;
     use chrono::Utc;
     use event_store_adapter_rs::types::Event;
 
     #[test]
     fn test_to_json() {
-        let project_id = ProjectId::default();
-        let project = ProjectName::new("test").unwrap();
-        let user_id = UserId::default();
-        let now = Utc::now();
         let event = ProjectEvent::ProjectCreated(ProjectEventCreatedBody::new(
-            project_id,
+            ProjectId::default(),
             1usize,
-            project,
+            ProjectName::new("test").unwrap(),
             Members::default(),
-            user_id,
-            now,
+            UserId::default(),
+            Utc::now(),
         ));
+
         let json = serde_json::to_string(&event);
-        let _occurred_at = event.occurred_at().timestamp_millis();
         println!("{}", json.unwrap());
+    }
+
+    #[test]
+    fn test_is_created() {
+        let event = ProjectEvent::ProjectCreated(ProjectEventCreatedBody::new(
+            ProjectId::default(),
+            1usize,
+            ProjectName::new("test").unwrap(),
+            Members::default(),
+            UserId::default(),
+            Utc::now(),
+        ));
+
+        assert!(event.is_created());
+
+        let event = ProjectEvent::ProjectDeleted(ProjectEventDeletedBody::new(
+            ProjectId::default(),
+            1usize,
+            UserId::default(),
+            Utc::now(),
+        ));
+
+        assert!(!event.is_created());
     }
 }

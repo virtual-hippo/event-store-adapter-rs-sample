@@ -124,7 +124,7 @@ impl Project {
         }
     }
 
-    pub fn replay(events: &Vec<ProjectEvent>, snapshot: Project) -> Self {
+    pub fn replay(events: &[ProjectEvent], snapshot: Project) -> Self {
         log::debug!("event.size = {}", events.len());
         events.iter().fold(snapshot, |mut result, event| {
             log::debug!("Replaying snapshot: {:?}", result);
