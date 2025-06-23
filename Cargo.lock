@@ -706,6 +706,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "command-processor"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "chrono",
+ "command-domain",
+ "command-interface-adaptor-if",
+ "downcast-rs",
+ "event-store-adapter-rs",
+ "log",
+ "thiserror 2.0.12",
+ "tokio",
+]
+
+[[package]]
 name = "core-foundation"
 version = "0.9.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
