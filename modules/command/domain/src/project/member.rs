@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::project::member_id::MemberId;
 use crate::project::member_role::MemberRole;
-use crate::user::user_id::UserId;
+use crate::user::UserId;
 
 /// メンバー
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]

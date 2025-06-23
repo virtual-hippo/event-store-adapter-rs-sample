@@ -3,7 +3,7 @@ use std::collections::BTreeMap;
 use serde::{Deserialize, Serialize};
 
 use crate::project::{Member, MemberId, MemberRole};
-use crate::user::user_id::UserId;
+use crate::user::UserId;
 
 /// メンバー集合
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]

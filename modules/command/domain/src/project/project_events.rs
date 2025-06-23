@@ -8,7 +8,7 @@ use crate::project::Member;
 use crate::project::Members;
 use crate::project::ProjectId;
 use crate::project::ProjectName;
-pub use crate::user::user_id::UserId;
+use crate::user::UserId;
 
 pub type ProjectEventId = ULID;
 
@@ -190,7 +190,7 @@ impl ProjectEventMemberRemovedBody {
 mod tests {
     use crate::project::project_events::{ProjectEvent, ProjectEventCreatedBody};
     use crate::project::{Members, ProjectEventDeletedBody, ProjectId, ProjectName};
-    use crate::user::user_id::UserId;
+    use crate::user::UserId;
     use chrono::Utc;
     use event_store_adapter_rs::types::Event;
 

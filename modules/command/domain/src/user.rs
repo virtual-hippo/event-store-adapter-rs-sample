@@ -1,6 +1,6 @@
 mod user_error;
 mod user_events;
-pub mod user_id;
+mod user_id;
 mod user_name;
 
 use chrono::{DateTime, Utc};
@@ -8,10 +8,10 @@ use event_store_adapter_rs::types::Aggregate;
 use serde::{Deserialize, Serialize};
 
 use crate::email::Email;
-use crate::user::user_error::UserError;
+pub use crate::user::user_error::UserError;
 use crate::user::user_events::{UserEvent, UserEventCreatedBody, UserEventDeletedBody};
-use crate::user::user_id::UserId;
-use crate::user::user_name::UserName;
+pub use crate::user::user_id::UserId;
+pub use crate::user::user_name::UserName;
 
 /// ユーザ
 #[derive(Debug, Clone, Serialize, Deserialize)]
