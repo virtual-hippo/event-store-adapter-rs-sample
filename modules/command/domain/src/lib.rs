@@ -1,4 +1,4 @@
-mod email;
+pub mod email;
 mod helper;
 pub mod project;
 pub mod user;

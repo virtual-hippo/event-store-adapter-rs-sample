@@ -22,7 +22,7 @@ pub use crate::project::project_events::{
 };
 pub use crate::project::project_id::ProjectId;
 pub use crate::project::project_name::ProjectName;
-pub use crate::user::user_id::UserId;
+use crate::user::UserId;
 
 // Serialize, Deserialize はドメインモデルに実装しないようにしたい
 #[derive(Debug, Clone, Serialize, Deserialize)]

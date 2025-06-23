@@ -1,5 +1,5 @@
 use crate::project::{ProjectId, ProjectName};
-use crate::user::user_id::UserId;
+use crate::user::UserId;
 use thiserror::Error;
 
 #[derive(Error, Debug)]
