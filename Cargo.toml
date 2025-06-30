@@ -5,6 +5,7 @@ members = [
     "aws-lambda-functions",
     "modules/command/domain",
     "modules/command/interface-adaptor-if",
+    "modules/command/processor",
 ]
 
 [workspace.dependencies]
