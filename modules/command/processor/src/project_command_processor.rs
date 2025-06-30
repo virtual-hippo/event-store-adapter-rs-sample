@@ -42,7 +42,7 @@ impl<TR: ProjectRepository> ProjectCommandProcessor<TR> {
             .store(&project_event, &project)
             .await
             .map(|_| project_event.aggregate_id().clone())
-            .map_err(|e| CommandProcessError::RepositoryError(e))
+            .map_err(CommandProcessError::RepositoryError)
     }
 
     pub async fn add_member(
@@ -57,19 +57,19 @@ impl<TR: ProjectRepository> ProjectCommandProcessor<TR> {
         let mut project = repository_mg
             .find_by_id(&project_id)
             .await
-            .map_err(|e| CommandProcessError::RepositoryError(e))?
+            .map_err(CommandProcessError::RepositoryError)?
             .ok_or(CommandProcessError::NotFoundError)?;
 
         let member_id = MemberId::new();
         let project_event = project
             .add_member(member_id, user_id, role, executor_id)
-            .map_err(|e| CommandProcessError::DomainLogicError(e))?;
+            .map_err(CommandProcessError::DomainLogicError)?;
 
         repository_mg
             .store(&project_event, &project)
             .await
             .map(|_| project_event.aggregate_id().clone())
-            .map_err(|e| CommandProcessError::RepositoryError(e))
+            .map_err(CommandProcessError::RepositoryError)
     }
 
     pub async fn remove_member(
@@ -83,18 +83,18 @@ impl<TR: ProjectRepository> ProjectCommandProcessor<TR> {
         let mut project = repository_mg
             .find_by_id(&project_id)
             .await
-            .map_err(|e| CommandProcessError::RepositoryError(e))?
+            .map_err(CommandProcessError::RepositoryError)?
             .ok_or(CommandProcessError::NotFoundError)?;
 
         let project_event = project
             .remove_member(user_id, executor_id)
-            .map_err(|e| CommandProcessError::DomainLogicError(e))?;
+            .map_err(CommandProcessError::DomainLogicError)?;
 
         repository_mg
             .store(&project_event, &project)
             .await
             .map(|_| project_event.aggregate_id().clone())
-            .map_err(|e| CommandProcessError::RepositoryError(e))
+            .map_err(CommandProcessError::RepositoryError)
     }
 
     pub async fn delete_project(
@@ -107,17 +107,15 @@ impl<TR: ProjectRepository> ProjectCommandProcessor<TR> {
         let mut project = repository_mg
             .find_by_id(&project_id)
             .await
-            .map_err(|e| CommandProcessError::RepositoryError(e))?
+            .map_err(CommandProcessError::RepositoryError)?
             .ok_or(CommandProcessError::NotFoundError)?;
 
-        let project_event = project
-            .delete(executor_id)
-            .map_err(|e| CommandProcessError::DomainLogicError(e))?;
+        let project_event = project.delete(executor_id).map_err(CommandProcessError::DomainLogicError)?;
 
         repository_mg
             .store(&project_event, &project)
             .await
             .map(|_| project_event.aggregate_id().clone())
-            .map_err(|e| CommandProcessError::RepositoryError(e))
+            .map_err(CommandProcessError::RepositoryError)
     }
 }
