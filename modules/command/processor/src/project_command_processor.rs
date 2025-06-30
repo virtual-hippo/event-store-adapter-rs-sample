@@ -47,7 +47,7 @@ impl<TR: ProjectRepository> ProjectCommandProcessor<TR> {
 
     pub async fn add_member(
         &mut self,
-        id: ProjectId,
+        project_id: ProjectId,
         user_id: UserId,
         role: MemberRole,
         executor_id: UserId,
@@ -55,7 +55,7 @@ impl<TR: ProjectRepository> ProjectCommandProcessor<TR> {
         let mut repository_mg = self.project_repository.lock().await;
 
         let mut project = repository_mg
-            .find_by_id(&id)
+            .find_by_id(&project_id)
             .await
             .map_err(|e| CommandProcessError::RepositoryError(e))?
             .ok_or(CommandProcessError::NotFoundError)?;
@@ -74,14 +74,14 @@ impl<TR: ProjectRepository> ProjectCommandProcessor<TR> {
 
     pub async fn remove_member(
         &mut self,
-        id: ProjectId,
+        project_id: ProjectId,
         user_id: UserId,
         executor_id: UserId,
     ) -> Result<ProjectId, CommandProcessError> {
         let mut repository_mg = self.project_repository.lock().await;
 
         let mut project = repository_mg
-            .find_by_id(&id)
+            .find_by_id(&project_id)
             .await
             .map_err(|e| CommandProcessError::RepositoryError(e))?
             .ok_or(CommandProcessError::NotFoundError)?;
@@ -99,13 +99,13 @@ impl<TR: ProjectRepository> ProjectCommandProcessor<TR> {
 
     pub async fn delete_project(
         &mut self,
-        id: ProjectId,
+        project_id: ProjectId,
         executor_id: UserId,
     ) -> Result<ProjectId, CommandProcessError> {
         let mut repository_mg = self.project_repository.lock().await;
 
         let mut project = repository_mg
-            .find_by_id(&id)
+            .find_by_id(&project_id)
             .await
             .map_err(|e| CommandProcessError::RepositoryError(e))?
             .ok_or(CommandProcessError::NotFoundError)?;
