@@ -20,12 +20,18 @@ impl MockProjectRepository {
     }
 }
 
+impl Default for MockProjectRepository {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 #[async_trait::async_trait]
 impl ProjectRepository for MockProjectRepository {
     async fn store(&mut self, event: &ProjectEvent, snapshot: &Project) -> Result<(), ProjectRepositoryError> {
         self.events
             .entry(event.aggregate_id().clone())
-            .or_insert_with(VecDeque::new)
+            .or_default()
             .push_back(event.clone());
 
         *self

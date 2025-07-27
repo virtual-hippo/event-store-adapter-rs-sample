@@ -14,7 +14,7 @@ use crate::graphql::{ES, MutationRoot, ServiceContext};
 
 #[Object]
 impl MutationRoot {
-    async fn create_project<'ctx>(&self, ctx: &Context<'ctx>, input: CreateProjectInput) -> FieldResult<ProjectOut> {
+    async fn create_project(&self, ctx: &Context<'_>, input: CreateProjectInput) -> FieldResult<ProjectOut> {
         let service_ctx = ctx.data::<ServiceContext<AwsDynamoDbProjectRepository<ES>>>().unwrap();
 
         let project_name = validate_project_name(&input.name)?;
@@ -28,7 +28,7 @@ impl MutationRoot {
             .map_err(error_handling)
     }
 
-    async fn delete_project<'ctx>(&self, ctx: &Context<'ctx>, input: DeleteProjectInput) -> FieldResult<ProjectOut> {
+    async fn delete_project(&self, ctx: &Context<'_>, input: DeleteProjectInput) -> FieldResult<ProjectOut> {
         let service_ctx = ctx.data::<ServiceContext<AwsDynamoDbProjectRepository<ES>>>().unwrap();
 
         let project_id = validate_project_id(&input.project_id)?;
@@ -42,7 +42,7 @@ impl MutationRoot {
             .map_err(error_handling)
     }
 
-    async fn add_member<'ctx>(&self, ctx: &Context<'ctx>, input: AddMemberInput) -> FieldResult<ProjectOut> {
+    async fn add_member(&self, ctx: &Context<'_>, input: AddMemberInput) -> FieldResult<ProjectOut> {
         let service_ctx = ctx.data::<ServiceContext<AwsDynamoDbProjectRepository<ES>>>().unwrap();
 
         let project_id = validate_project_id(&input.project_id)?;
@@ -58,7 +58,7 @@ impl MutationRoot {
             .map_err(error_handling)
     }
 
-    async fn remove_member<'ctx>(&self, ctx: &Context<'ctx>, input: RemoveMemberInput) -> FieldResult<ProjectOut> {
+    async fn remove_member(&self, ctx: &Context<'_>, input: RemoveMemberInput) -> FieldResult<ProjectOut> {
         let service_ctx = ctx.data::<ServiceContext<AwsDynamoDbProjectRepository<ES>>>().unwrap();
 
         let project_id = validate_project_id(&input.project_id)?;
