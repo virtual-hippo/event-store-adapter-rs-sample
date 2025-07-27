@@ -1437,6 +1437,25 @@ dependencies = [
 [[package]]
 name = "interface-adaptor"
 version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "aws-config",
+ "aws-sdk-dynamodb",
+ "chrono",
+ "command-domain",
+ "command-interface-adaptor-if",
+ "command-processor",
+ "downcast-rs",
+ "event-store-adapter-rs",
+ "log",
+ "once_cell",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.12",
+ "tokio",
+ "tower 0.5.2",
+]
 
 [[package]]
 name = "itertools"
