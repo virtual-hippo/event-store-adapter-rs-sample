@@ -14,13 +14,26 @@ export class EventStoreAdapterRsSampleStack extends Stack {
   constructor(scope: Construct, id: string, props?: EventStoreAdapterRsSampleStackProps) {
     super(scope, id, props);
 
-    const fn = new RustFunction(this, "HelloFunction", {
-      manifestPath: path.join(__dirname, "../../../", "aws-lambda-functions", "Cargo.toml"),
-      binaryName: "hello",
-    });
+    {
+      const fn = new RustFunction(this, "HelloFunction", {
+        manifestPath: path.join(__dirname, "../../../", "aws-lambda-functions", "Cargo.toml"),
+        binaryName: "hello",
+      });
 
-    const fnUrl = fn.addFunctionUrl();
+      const fnUrl = fn.addFunctionUrl();
 
-    new CfnOutput(this, "HelloFunctionUrl", { value: fnUrl.url });
+      new CfnOutput(this, "HelloFunctionUrl", { value: fnUrl.url });
+    }
+
+    {
+      const fn = new RustFunction(this, "WriteApiFunction", {
+        manifestPath: path.join(__dirname, "../../../", "aws-lambda-functions", "Cargo.toml"),
+        binaryName: "write-api",
+      });
+
+      const fnUrl = fn.addFunctionUrl();
+
+      new CfnOutput(this, "WriteApiFunctionUrl", { value: fnUrl.url });
+    }
   }
 }

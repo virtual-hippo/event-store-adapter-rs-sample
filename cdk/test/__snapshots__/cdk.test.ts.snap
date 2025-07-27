@@ -11,6 +11,14 @@ exports[`Snapshot test 1`] = `
         ],
       },
     },
+    "WriteApiFunctionUrl": {
+      "Value": {
+        "Fn::GetAtt": [
+          "WriteApiFunctionFunctionUrlA06700E5",
+          "FunctionUrl",
+        ],
+      },
+    },
   },
   "Parameters": {
     "BootstrapVersion": {
@@ -58,6 +66,74 @@ exports[`Snapshot test 1`] = `
       "Type": "AWS::Lambda::Url",
     },
     "HelloFunctionServiceRole186F1BA8": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "WriteApiFunction5106E371": {
+      "DependsOn": [
+        "WriteApiFunctionServiceRoleCB6CB54D",
+      ],
+      "Properties": {
+        "Architectures": [
+          "x86_64",
+        ],
+        "Code": {
+          "S3Bucket": {
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-ap-northeast-1",
+          },
+          "S3Key": "HASH_REPLACED.zip",
+        },
+        "Handler": "bootstrap",
+        "Role": {
+          "Fn::GetAtt": [
+            "WriteApiFunctionServiceRoleCB6CB54D",
+            "Arn",
+          ],
+        },
+        "Runtime": "provided.al2023",
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "WriteApiFunctionFunctionUrlA06700E5": {
+      "Properties": {
+        "AuthType": "AWS_IAM",
+        "TargetFunctionArn": {
+          "Fn::GetAtt": [
+            "WriteApiFunction5106E371",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Url",
+    },
+    "WriteApiFunctionServiceRoleCB6CB54D": {
       "Properties": {
         "AssumeRolePolicyDocument": {
           "Statement": [
