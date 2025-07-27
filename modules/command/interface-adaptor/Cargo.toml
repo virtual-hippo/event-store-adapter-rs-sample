@@ -21,3 +21,4 @@ serde_json = { workspace = true }
 tokio = { workspace = true, features = ["full"] }
 tower = { workspace = true }
 event-store-adapter-rs = { workspace = true }
+async-graphql = { workspace = true, features = ["chrono"] }
