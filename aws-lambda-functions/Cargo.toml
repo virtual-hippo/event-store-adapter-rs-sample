@@ -7,3 +7,33 @@ edition = "2021"
 lambda_http = "0.13.0"
 
 tokio = { version = "1", features = ["macros"] }
+
+anyhow = { workspace = true, features = ["backtrace"] }
+aws-config = { workspace = true, features = ["behavior-version-latest"] }
+aws-sdk-dynamodb = { workspace = true }
+axum = { workspace = true }
+chrono = { workspace = true, features = ["serde"] }
+config = { workspace = true }
+command-interface-adaptor = { path = "../modules/command/interface-adaptor" }
+command-processor = { path = "../modules/command/processor" }
+command-domain = { path = "../modules/command/domain" }
+downcast-rs = { workspace = true }
+env_logger = { workspace = true }
+hyper = { workspace = true,  features = ["full"] }
+openssl = { workspace = true, features = ["vendored"] }
+serde = { workspace = true, features = ["derive"] }
+tower = { workspace = true }
+tower-http = { workspace = true, features = ["cors"] }
+tracing = { workspace = true }
+tracing-log = { workspace = true }
+tracing-subscriber = { workspace = true, features = ["fmt", "ansi", "env-filter"] }
+event-store-adapter-rs ={ workspace = true }
+
+[[bin]]
+name = "hello"
+path = "src/bin/hello.rs"
+
+[[bin]]
+name = "write-api"
+path = "src/bin/write-api.rs"
+

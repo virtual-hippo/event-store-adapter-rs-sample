@@ -1,5 +1,5 @@
 [package]
-name = "interface-adaptor"
+name = "command-interface-adaptor"
 version = "0.1.0"
 edition = "2024"
 
