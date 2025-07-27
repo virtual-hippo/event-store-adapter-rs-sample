@@ -1,0 +1,120 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Snapshot test 1`] = `
+{
+  "Outputs": {
+    "HelloFunctionUrl": {
+      "Value": {
+        "Fn::GetAtt": [
+          "HelloFunctionFunctionUrl0E00A69D",
+          "FunctionUrl",
+        ],
+      },
+    },
+  },
+  "Parameters": {
+    "BootstrapVersion": {
+      "Default": "/cdk-bootstrap/hnb659fds/version",
+      "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]",
+      "Type": "AWS::SSM::Parameter::Value<String>",
+    },
+  },
+  "Resources": {
+    "HelloFunctionD909AE8C": {
+      "DependsOn": [
+        "HelloFunctionServiceRole186F1BA8",
+      ],
+      "Properties": {
+        "Architectures": [
+          "x86_64",
+        ],
+        "Code": {
+          "S3Bucket": {
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-ap-northeast-1",
+          },
+          "S3Key": "HASH_REPLACED.zip",
+        },
+        "Handler": "bootstrap",
+        "Role": {
+          "Fn::GetAtt": [
+            "HelloFunctionServiceRole186F1BA8",
+            "Arn",
+          ],
+        },
+        "Runtime": "provided.al2023",
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "HelloFunctionFunctionUrl0E00A69D": {
+      "Properties": {
+        "AuthType": "AWS_IAM",
+        "TargetFunctionArn": {
+          "Fn::GetAtt": [
+            "HelloFunctionD909AE8C",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Url",
+    },
+    "HelloFunctionServiceRole186F1BA8": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+  },
+  "Rules": {
+    "CheckBootstrapVersion": {
+      "Assertions": [
+        {
+          "Assert": {
+            "Fn::Not": [
+              {
+                "Fn::Contains": [
+                  [
+                    "1",
+                    "2",
+                    "3",
+                    "4",
+                    "5",
+                  ],
+                  {
+                    "Ref": "BootstrapVersion",
+                  },
+                ],
+              },
+            ],
+          },
+          "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI.",
+        },
+      ],
+    },
+  },
+}
+`;

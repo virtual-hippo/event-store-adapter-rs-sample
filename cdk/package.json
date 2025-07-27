@@ -4,10 +4,15 @@
   "bin": {
     "cdk": "bin/cdk.js"
   },
+  "packageManager": "pnpm@10.6.1",
+  "engines": {
+    "node": ">=22.0.0",
+    "pnpm": ">=10.0.0"
+  },
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",
-    "test": "jest",
+    "test": "vitest",
     "cdk": "cdk",
     "lint": "eslint --fix .",
     "lint:ci": "eslint .",
@@ -15,22 +20,20 @@
     "fmt:ci": "prettier --check ."
   },
   "devDependencies": {
-    "@types/jest": "^29.5.14",
     "@types/node": "22.7.9",
     "aws-cdk": "2.1003.0",
-    "eslint": "^9.22.0",
+    "eslint": "^9.32.0",
     "eslint-cdk-plugin": "^1.1.1",
-    "jest": "^29.7.0",
-    "prettier": "^3.5.3",
-    "prettier-plugin-organize-imports": "^4.1.0",
-    "ts-jest": "^29.2.5",
+    "prettier": "^3.6.2",
+    "prettier-plugin-organize-imports": "^4.2.0",
     "ts-node": "^10.9.2",
     "typescript": "~5.6.3",
-    "typescript-eslint": "^8.23.0"
+    "typescript-eslint": "^8.38.0",
+    "vitest": "^3.2.4"
   },
   "dependencies": {
     "aws-cdk-lib": "2.181.1",
     "cargo-lambda-cdk": "^0.0.32",
-    "constructs": "^10.0.0"
+    "constructs": "^10.4.2"
   }
 }

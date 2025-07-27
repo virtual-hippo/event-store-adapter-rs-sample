@@ -1,17 +1,29 @@
 import * as cdk from "aws-cdk-lib";
 import { Template } from "aws-cdk-lib/assertions";
-import * as Cdk from "../lib/event-store-adapter-rs-sample";
+import { APP_PARAMETERS } from "../lib/parameters";
+import { EventStoreAdapterRsSampleStage } from "../lib/stages";
 
-test("SQS Queue and SNS Topic Created", () => {
+export const serializer = {
+  test: (val: unknown) => typeof val === "string",
+  serialize: (val: string) => {
+    return `"${val
+      // Asset hash をダミー値に置き換え
+      .replace(/([A-Fa-f0-9]{64}.zip)/, "HASH_REPLACED.zip")
+      // Construct address をダミー値に置き換え
+      .replace(/[a-f0-9]{42}/, "[CONSTRUCT_ADDR_REPLACED]")}"`;
+  },
+};
+
+test("Snapshot test", () => {
   const app = new cdk.App();
-  // WHEN
-  const stack = new Cdk.CdkStack(app, "MyTestStack");
-  // THEN
 
-  const template = Template.fromStack(stack);
-
-  template.hasResourceProperties("AWS::SQS::Queue", {
-    VisibilityTimeout: 300,
+  const stage = new EventStoreAdapterRsSampleStage(app, "Dev01", {
+    envType: "Dev01",
+    appParameter: APP_PARAMETERS.Dev01,
   });
-  template.resourceCountIs("AWS::SNS::Topic", 1);
+
+  const template = Template.fromStack(stage.eventStoreAdapterRsSampleStack);
+
+  expect.addSnapshotSerializer(serializer);
+  expect(template.toJSON()).toMatchSnapshot();
 });
