@@ -22,3 +22,6 @@ tokio = { workspace = true, features = ["full"] }
 tower = { workspace = true }
 event-store-adapter-rs = { workspace = true }
 async-graphql = { workspace = true, features = ["chrono"] }
+
+axum = { workspace = true }
+async-graphql-axum = { workspace = true }
