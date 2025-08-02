@@ -1,7 +1,7 @@
 import { Stack, StackProps } from "aws-cdk-lib";
 import { Construct } from "constructs";
 
-import { AppFunction } from "../constructs";
+import { AppFunction, Cdn } from "../constructs";
 
 import { AppParameter } from "../parameters";
 
@@ -13,8 +13,12 @@ export class EventStoreAdapterRsSampleStack extends Stack {
   constructor(scope: Construct, id: string, props: EventStoreAdapterRsSampleStackProps) {
     super(scope, id, props);
 
-    new AppFunction(this, "AppFunction", {
+    const appFunction = new AppFunction(this, "AppFunction", {
       apiParameter: props.appParameter.appFunctionParameter.apiParameter,
+    });
+
+    new Cdn(this, "Cdn", {
+      lambdaFunctionUrl: appFunction.writeApiFnUrl,
     });
   }
 }

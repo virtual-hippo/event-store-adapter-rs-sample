@@ -14,9 +14,9 @@ export interface AppFunctionProps {
 
 export class AppFunction extends Construct {
   /**
-   * Write API の Lambda 関数
+   * Write API の Lambda 関数の URL
    */
-  readonly writeApiFn: lambda.IFunction;
+  readonly writeApiFnUrl: lambda.IFunctionUrl;
 
   constructor(scope: Construct, id: string, props: AppFunctionProps) {
     super(scope, id);
@@ -47,13 +47,13 @@ export class AppFunction extends Construct {
           allowedOrigins: [...props.apiParameter.apiAllowOrigins],
           allowedMethods: [lambda.HttpMethod.POST],
           allowedHeaders: ["*"],
-          maxAge: Duration.seconds(300),
+          maxAge: Duration.seconds(60),
         },
       });
 
       new CfnOutput(this, "WriteApiFunctionUrl", { value: fnUrl.url });
 
-      this.writeApiFn = fn;
+      this.writeApiFnUrl = fnUrl;
     }
   }
 }
