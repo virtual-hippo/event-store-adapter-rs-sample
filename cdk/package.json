@@ -13,6 +13,7 @@
     "build": "tsc",
     "watch": "tsc -w",
     "test": "vitest",
+    "test:run": "vitest run",
     "cdk": "cdk",
     "lint": "eslint --fix .",
     "lint:ci": "eslint .",
