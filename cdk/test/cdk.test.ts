@@ -7,6 +7,8 @@ export const serializer = {
   test: (val: unknown) => typeof val === "string",
   serialize: (val: string) => {
     return `"${val
+      //
+      .replace(/const authString = (.+);/, "const authString = REPLACED;")
       // Asset hash をダミー値に置き換え
       .replace(/([A-Fa-f0-9]{64}.zip)/, "HASH_REPLACED.zip")
       // Construct address をダミー値に置き換え
