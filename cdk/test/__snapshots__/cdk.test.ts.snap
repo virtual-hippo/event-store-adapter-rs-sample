@@ -3,18 +3,10 @@
 exports[`Snapshot test 1`] = `
 {
   "Outputs": {
-    "HelloFunctionUrl": {
+    "AppFunctionWriteApiFunctionUrl1AE33250": {
       "Value": {
         "Fn::GetAtt": [
-          "HelloFunctionFunctionUrl0E00A69D",
-          "FunctionUrl",
-        ],
-      },
-    },
-    "WriteApiFunctionUrl": {
-      "Value": {
-        "Fn::GetAtt": [
-          "WriteApiFunctionFunctionUrlA06700E5",
+          "AppFunctionWriteApiFunctionFunctionUrl043725AB",
           "FunctionUrl",
         ],
       },
@@ -28,9 +20,9 @@ exports[`Snapshot test 1`] = `
     },
   },
   "Resources": {
-    "HelloFunctionD909AE8C": {
+    "AppFunctionWriteApiFunction3C482938": {
       "DependsOn": [
-        "HelloFunctionServiceRole186F1BA8",
+        "AppFunctionWriteApiFunctionServiceRole89C3ED13",
       ],
       "Properties": {
         "Architectures": [
@@ -42,10 +34,25 @@ exports[`Snapshot test 1`] = `
           },
           "S3Key": "HASH_REPLACED.zip",
         },
+        "Environment": {
+          "Variables": {
+            "APP__API__ALLOW_ORIGINS": "http://localhost:3000,http://localhost:5173,http://localhost:8080",
+            "APP__AWS__ACCESS_KEY_ID": "x",
+            "APP__AWS__ENDPOINT_URL": "x",
+            "APP__AWS__REGION_NAME": "ap-northeast-1",
+            "APP__AWS__SECRET_ACCESS_KEY": "x",
+            "APP__PERSISTENCE__JOURNAL_AID_INDEX_NAME": "journal-aid-index",
+            "APP__PERSISTENCE__JOURNAL_TABLE_NAME": "journal",
+            "APP__PERSISTENCE__SHARD_COUNT": "64",
+            "APP__PERSISTENCE__SNAPSHOT_AID_INDEX_NAME": "snapshot-aid-index",
+            "APP__PERSISTENCE__SNAPSHOT_INTERVAL": "10",
+            "APP__PERSISTENCE__SNAPSHOT_TABLE_NAME": "snapshot",
+          },
+        },
         "Handler": "bootstrap",
         "Role": {
           "Fn::GetAtt": [
-            "HelloFunctionServiceRole186F1BA8",
+            "AppFunctionWriteApiFunctionServiceRole89C3ED13",
             "Arn",
           ],
         },
@@ -53,87 +60,33 @@ exports[`Snapshot test 1`] = `
       },
       "Type": "AWS::Lambda::Function",
     },
-    "HelloFunctionFunctionUrl0E00A69D": {
+    "AppFunctionWriteApiFunctionFunctionUrl043725AB": {
       "Properties": {
         "AuthType": "AWS_IAM",
+        "Cors": {
+          "AllowHeaders": [
+            "*",
+          ],
+          "AllowMethods": [
+            "POST",
+          ],
+          "AllowOrigins": [
+            "http://localhost:3000",
+            "http://localhost:5173",
+            "http://localhost:8080",
+          ],
+          "MaxAge": 300,
+        },
         "TargetFunctionArn": {
           "Fn::GetAtt": [
-            "HelloFunctionD909AE8C",
+            "AppFunctionWriteApiFunction3C482938",
             "Arn",
           ],
         },
       },
       "Type": "AWS::Lambda::Url",
     },
-    "HelloFunctionServiceRole186F1BA8": {
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-                "Service": "lambda.amazonaws.com",
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "ManagedPolicyArns": [
-          {
-            "Fn::Join": [
-              "",
-              [
-                "arn:",
-                {
-                  "Ref": "AWS::Partition",
-                },
-                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
-              ],
-            ],
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Role",
-    },
-    "WriteApiFunction5106E371": {
-      "DependsOn": [
-        "WriteApiFunctionServiceRoleCB6CB54D",
-      ],
-      "Properties": {
-        "Architectures": [
-          "x86_64",
-        ],
-        "Code": {
-          "S3Bucket": {
-            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-ap-northeast-1",
-          },
-          "S3Key": "HASH_REPLACED.zip",
-        },
-        "Handler": "bootstrap",
-        "Role": {
-          "Fn::GetAtt": [
-            "WriteApiFunctionServiceRoleCB6CB54D",
-            "Arn",
-          ],
-        },
-        "Runtime": "provided.al2023",
-      },
-      "Type": "AWS::Lambda::Function",
-    },
-    "WriteApiFunctionFunctionUrlA06700E5": {
-      "Properties": {
-        "AuthType": "AWS_IAM",
-        "TargetFunctionArn": {
-          "Fn::GetAtt": [
-            "WriteApiFunction5106E371",
-            "Arn",
-          ],
-        },
-      },
-      "Type": "AWS::Lambda::Url",
-    },
-    "WriteApiFunctionServiceRoleCB6CB54D": {
+    "AppFunctionWriteApiFunctionServiceRole89C3ED13": {
       "Properties": {
         "AssumeRolePolicyDocument": {
           "Statement": [
