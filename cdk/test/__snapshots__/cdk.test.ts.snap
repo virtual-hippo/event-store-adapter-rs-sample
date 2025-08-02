@@ -11,6 +11,23 @@ exports[`Snapshot test 1`] = `
         ],
       },
     },
+    "CdnApiEndpoint143E168B": {
+      "Description": "API Endpoint URL",
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "https://",
+            {
+              "Fn::GetAtt": [
+                "CdnApiDistribution0EF35839",
+                "DomainName",
+              ],
+            },
+          ],
+        ],
+      },
+    },
   },
   "Parameters": {
     "BootstrapVersion": {
@@ -75,7 +92,7 @@ exports[`Snapshot test 1`] = `
             "http://localhost:5173",
             "http://localhost:8080",
           ],
-          "MaxAge": 300,
+          "MaxAge": 60,
         },
         "TargetFunctionArn": {
           "Fn::GetAtt": [
@@ -116,6 +133,151 @@ exports[`Snapshot test 1`] = `
         ],
       },
       "Type": "AWS::IAM::Role",
+    },
+    "CdnApiDistribution0EF35839": {
+      "Properties": {
+        "DistributionConfig": {
+          "Comment": "event-store-adapter-rs-sample",
+          "DefaultCacheBehavior": {
+            "AllowedMethods": [
+              "GET",
+              "HEAD",
+              "OPTIONS",
+              "PUT",
+              "PATCH",
+              "POST",
+              "DELETE",
+            ],
+            "CachePolicyId": "4135ea2d-6df8-44a3-9df3-4b5a84be39ad",
+            "Compress": true,
+            "FunctionAssociations": [
+              {
+                "EventType": "viewer-request",
+                "FunctionARN": {
+                  "Fn::GetAtt": [
+                    "CdnBasicAuthenticationFunction42EB65BB",
+                    "FunctionARN",
+                  ],
+                },
+              },
+            ],
+            "OriginRequestPolicyId": "b689b0a8-53d0-40ab-baf2-68738e2966ac",
+            "ResponseHeadersPolicyId": "67f7725c-6f97-4210-82d7-5512b31e9d03",
+            "TargetOriginId": "Dev01EventStoreAdapterRsSampleCdnApiDistributionOrigin19A258280",
+            "ViewerProtocolPolicy": "redirect-to-https",
+          },
+          "Enabled": true,
+          "HttpVersion": "http2",
+          "IPV6Enabled": true,
+          "Origins": [
+            {
+              "CustomOriginConfig": {
+                "OriginProtocolPolicy": "https-only",
+                "OriginSSLProtocols": [
+                  "TLSv1.2",
+                ],
+              },
+              "DomainName": {
+                "Fn::Select": [
+                  2,
+                  {
+                    "Fn::Split": [
+                      "/",
+                      {
+                        "Fn::GetAtt": [
+                          "AppFunctionWriteApiFunctionFunctionUrl043725AB",
+                          "FunctionUrl",
+                        ],
+                      },
+                    ],
+                  },
+                ],
+              },
+              "Id": "Dev01EventStoreAdapterRsSampleCdnApiDistributionOrigin19A258280",
+              "OriginAccessControlId": {
+                "Fn::GetAtt": [
+                  "CdnApiDistributionOrigin1FunctionUrlOriginAccessControl3213FEA5",
+                  "Id",
+                ],
+              },
+            },
+          ],
+          "PriceClass": "PriceClass_100",
+        },
+      },
+      "Type": "AWS::CloudFront::Distribution",
+    },
+    "CdnApiDistributionOrigin1FunctionUrlOriginAccessControl3213FEA5": {
+      "Properties": {
+        "OriginAccessControlConfig": {
+          "Name": "Dev01EventStoreAdapterRsSampnctionUrlOriginAccessControlD54CA57C",
+          "OriginAccessControlOriginType": "lambda",
+          "SigningBehavior": "always",
+          "SigningProtocol": "sigv4",
+        },
+      },
+      "Type": "AWS::CloudFront::OriginAccessControl",
+    },
+    "CdnApiDistributionOrigin1InvokeFromApiForDev01EventStoreAdapterRsSampleCdnApiDistributionOrigin19A258280079E207D": {
+      "Properties": {
+        "Action": "lambda:InvokeFunctionUrl",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "AppFunctionWriteApiFunctionFunctionUrl043725AB",
+            "FunctionArn",
+          ],
+        },
+        "Principal": "cloudfront.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition",
+              },
+              ":cloudfront::",
+              {
+                "Ref": "AWS::AccountId",
+              },
+              ":distribution/",
+              {
+                "Ref": "CdnApiDistribution0EF35839",
+              },
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+    "CdnBasicAuthenticationFunction42EB65BB": {
+      "Properties": {
+        "AutoPublish": true,
+        "FunctionCode": "function handler(event) {
+    const request = event.request;
+    const headers = request.headers;
+
+    const authString = REPLACED;
+    
+    if (
+        typeof headers.authorization === "undefined" ||
+        headers.authorization.value !== authString
+    ) {
+        return {
+            statusCode: 401,
+            statusDescription: "Unauthorized",
+            headers: { "www-authenticate": { value: "Basic" } }
+        };
+    }
+    return request;
+}",
+        "FunctionConfig": {
+          "Comment": "ap-northeast-1Dev01-EventStoreticationFunctionC69A265E",
+          "Runtime": "cloudfront-js-2.0",
+        },
+        "Name": "ap-northeast-1Dev01-EventStoreticationFunctionC69A265E",
+      },
+      "Type": "AWS::CloudFront::Function",
     },
   },
   "Rules": {
