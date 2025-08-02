@@ -6,4 +6,10 @@ export const DEV_PARAMETER: AppParameter = {
     // account: "123456789012",
     region: "ap-northeast-1",
   },
+  appFunctionParameter: {
+    apiParameter: {
+      // 整える
+      apiAllowOrigins: ["http://localhost:3000", "http://localhost:5173", "http://localhost:8080"],
+    },
+  },
 } as const;
