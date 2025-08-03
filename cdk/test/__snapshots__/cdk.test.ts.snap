@@ -37,6 +37,60 @@ exports[`Snapshot test 1`] = `
     },
   },
   "Resources": {
+    "AWS679f53fac002430cb0da5b7982bd22872D164C4C": {
+      "DependsOn": [
+        "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
+      ],
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-ap-northeast-1",
+          },
+          "S3Key": "HASH_REPLACED.zip",
+        },
+        "Handler": "index.handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
+            "Arn",
+          ],
+        },
+        "Runtime": "nodejs20.x",
+        "Timeout": 120,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
     "AppFunctionWriteApiFunction3C482938": {
       "DependsOn": [
         "AppFunctionWriteApiFunctionServiceRole89C3ED13",
@@ -161,6 +215,18 @@ exports[`Snapshot test 1`] = `
                 },
               },
             ],
+            "LambdaFunctionAssociations": [
+              {
+                "EventType": "origin-request",
+                "IncludeBody": true,
+                "LambdaFunctionARN": {
+                  "Fn::GetAtt": [
+                    "CdnHasherFnArnParameterCustomResource6EC40F22",
+                    "Parameter.Value",
+                  ],
+                },
+              },
+            ],
             "OriginRequestPolicyId": "b689b0a8-53d0-40ab-baf2-68738e2966ac",
             "ResponseHeadersPolicyId": "67f7725c-6f97-4210-82d7-5512b31e9d03",
             "TargetOriginId": "Dev01EventStoreAdapterRsSampleCdnApiDistributionOrigin19A258280",
@@ -278,6 +344,61 @@ exports[`Snapshot test 1`] = `
         "Name": "ap-northeast-1Dev01-EventStoreticationFunctionC69A265E",
       },
       "Type": "AWS::CloudFront::Function",
+    },
+    "CdnHasherFnArnParameterCustomResource6EC40F22": {
+      "DeletionPolicy": "Delete",
+      "DependsOn": [
+        "CdnHasherFnArnParameterCustomResourceCustomResourcePolicy1D465181",
+      ],
+      "Properties": {
+        "Create": "{"service":"SSM","action":"getParameter","parameters":{"Name":"/event-store-adapter-rs-sample/edge-hasher-fn-arn"},"physicalResourceId":{"id":"PhysicalResourceId-1754189395134"},"region":"us-east-1"}",
+        "InstallLatestAwsSdk": true,
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "AWS679f53fac002430cb0da5b7982bd22872D164C4C",
+            "Arn",
+          ],
+        },
+        "Update": "{"service":"SSM","action":"getParameter","parameters":{"Name":"/event-store-adapter-rs-sample/edge-hasher-fn-arn"},"physicalResourceId":{"id":"PhysicalResourceId-1754189395134"},"region":"us-east-1"}",
+      },
+      "Type": "Custom::AWS",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "CdnHasherFnArnParameterCustomResourceCustomResourcePolicy1D465181": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "ssm:GetParameter*",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition",
+                    },
+                    ":ssm:us-east-1:",
+                    {
+                      "Ref": "AWS::AccountId",
+                    },
+                    ":*",
+                  ],
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "CdnHasherFnArnParameterCustomResourceCustomResourcePolicy1D465181",
+        "Roles": [
+          {
+            "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
     },
   },
   "Rules": {
