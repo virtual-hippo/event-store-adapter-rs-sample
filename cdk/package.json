@@ -21,8 +21,10 @@
     "fmt:ci": "prettier --check ."
   },
   "devDependencies": {
+    "@types/aws-lambda": "^8.10.152",
     "@types/node": "22.7.9",
     "aws-cdk": "2.1003.0",
+    "esbuild": "^0.25.8",
     "eslint": "^9.32.0",
     "eslint-cdk-plugin": "^1.1.1",
     "prettier": "^3.6.2",
