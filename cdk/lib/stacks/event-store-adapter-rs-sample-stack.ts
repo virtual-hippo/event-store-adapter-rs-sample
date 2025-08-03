@@ -7,6 +7,7 @@ import { AppParameter } from "../parameters";
 
 export interface EventStoreAdapterRsSampleStackProps extends StackProps {
   readonly appParameter: AppParameter;
+  readonly hasherFnArnParameterName: string;
 }
 
 export class EventStoreAdapterRsSampleStack extends Stack {
@@ -19,6 +20,7 @@ export class EventStoreAdapterRsSampleStack extends Stack {
 
     new Cdn(this, "Cdn", {
       lambdaFunctionUrl: appFunction.writeApiFnUrl,
+      hasherFnArnParameterName: props.hasherFnArnParameterName,
     });
   }
 }
