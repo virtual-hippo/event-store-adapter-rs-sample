@@ -1,7 +1,6 @@
 import * as path from "path";
 
-import { CfnOutput, Duration } from "aws-cdk-lib";
-import * as lambda from "aws-cdk-lib/aws-lambda";
+import { Duration, aws_dynamodb as dynamodb, aws_lambda as lambda } from "aws-cdk-lib";
 import { Construct } from "constructs";
 
 import { RustFunction } from "cargo-lambda-cdk";
@@ -10,6 +9,10 @@ export interface AppFunctionProps {
   readonly apiParameter: {
     readonly apiAllowOrigins: string[];
   };
+  readonly journalTable: dynamodb.ITableV2;
+  readonly journalGsiName: string;
+  readonly snapshotTable: dynamodb.ITableV2;
+  readonly snapshotGsiName: string;
 }
 
 export class AppFunction extends Construct {
@@ -28,18 +31,18 @@ export class AppFunction extends Construct {
         // TODO: 整える
         environment: {
           APP__API__ALLOW_ORIGINS: props.apiParameter.apiAllowOrigins.join(","),
-          APP__PERSISTENCE__JOURNAL_TABLE_NAME: "journal",
-          APP__PERSISTENCE__JOURNAL_AID_INDEX_NAME: "journal-aid-index",
-          APP__PERSISTENCE__SNAPSHOT_TABLE_NAME: "snapshot",
-          APP__PERSISTENCE__SNAPSHOT_AID_INDEX_NAME: "snapshot-aid-index",
+          APP__PERSISTENCE__JOURNAL_TABLE_NAME: props.journalTable.tableName,
+          APP__PERSISTENCE__JOURNAL_AID_INDEX_NAME: props.journalGsiName,
+          APP__PERSISTENCE__SNAPSHOT_TABLE_NAME: props.snapshotTable.tableName,
+          APP__PERSISTENCE__SNAPSHOT_AID_INDEX_NAME: props.snapshotGsiName,
           APP__PERSISTENCE__SHARD_COUNT: "64",
           APP__PERSISTENCE__SNAPSHOT_INTERVAL: "10",
           APP__AWS__REGION_NAME: "ap-northeast-1",
-          APP__AWS__ENDPOINT_URL: "x",
-          APP__AWS__ACCESS_KEY_ID: "x",
-          APP__AWS__SECRET_ACCESS_KEY: "x",
         },
       });
+
+      props.journalTable.grantReadWriteData(fn);
+      props.snapshotTable.grantReadWriteData(fn);
 
       const fnUrl = fn.addFunctionUrl({
         // TODO: 整える
@@ -50,8 +53,6 @@ export class AppFunction extends Construct {
           maxAge: Duration.seconds(60),
         },
       });
-
-      new CfnOutput(this, "WriteApiFunctionUrl", { value: fnUrl.url });
 
       this.writeApiFnUrl = fnUrl;
     }
