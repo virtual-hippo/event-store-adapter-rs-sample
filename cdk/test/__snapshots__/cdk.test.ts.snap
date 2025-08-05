@@ -83,10 +83,10 @@ exports[`Snapshot test 1`] = `
       },
       "Type": "AWS::IAM::Role",
     },
-    "AppFunctionWriteApiFunction3C482938": {
+    "AppFunctionsWriteApiFunctionB645249B": {
       "DependsOn": [
-        "AppFunctionWriteApiFunctionServiceRoleDefaultPolicyA98DF956",
-        "AppFunctionWriteApiFunctionServiceRole89C3ED13",
+        "AppFunctionsWriteApiFunctionServiceRoleDefaultPolicy2181B3AE",
+        "AppFunctionsWriteApiFunctionServiceRoleB47EF3F3",
       ],
       "Properties": {
         "Architectures": [
@@ -117,7 +117,7 @@ exports[`Snapshot test 1`] = `
         "Handler": "bootstrap",
         "Role": {
           "Fn::GetAtt": [
-            "AppFunctionWriteApiFunctionServiceRole89C3ED13",
+            "AppFunctionsWriteApiFunctionServiceRoleB47EF3F3",
             "Arn",
           ],
         },
@@ -125,7 +125,7 @@ exports[`Snapshot test 1`] = `
       },
       "Type": "AWS::Lambda::Function",
     },
-    "AppFunctionWriteApiFunctionFunctionUrl043725AB": {
+    "AppFunctionsWriteApiFunctionFunctionUrl196CB77B": {
       "Properties": {
         "AuthType": "AWS_IAM",
         "Cors": {
@@ -144,14 +144,14 @@ exports[`Snapshot test 1`] = `
         },
         "TargetFunctionArn": {
           "Fn::GetAtt": [
-            "AppFunctionWriteApiFunction3C482938",
+            "AppFunctionsWriteApiFunctionB645249B",
             "Arn",
           ],
         },
       },
       "Type": "AWS::Lambda::Url",
     },
-    "AppFunctionWriteApiFunctionServiceRole89C3ED13": {
+    "AppFunctionsWriteApiFunctionServiceRoleB47EF3F3": {
       "Properties": {
         "AssumeRolePolicyDocument": {
           "Statement": [
@@ -182,7 +182,7 @@ exports[`Snapshot test 1`] = `
       },
       "Type": "AWS::IAM::Role",
     },
-    "AppFunctionWriteApiFunctionServiceRoleDefaultPolicyA98DF956": {
+    "AppFunctionsWriteApiFunctionServiceRoleDefaultPolicy2181B3AE": {
       "Properties": {
         "PolicyDocument": {
           "Statement": [
@@ -267,10 +267,10 @@ exports[`Snapshot test 1`] = `
           ],
           "Version": "2012-10-17",
         },
-        "PolicyName": "AppFunctionWriteApiFunctionServiceRoleDefaultPolicyA98DF956",
+        "PolicyName": "AppFunctionsWriteApiFunctionServiceRoleDefaultPolicy2181B3AE",
         "Roles": [
           {
-            "Ref": "AppFunctionWriteApiFunctionServiceRole89C3ED13",
+            "Ref": "AppFunctionsWriteApiFunctionServiceRoleB47EF3F3",
           },
         ],
       },
@@ -297,7 +297,7 @@ exports[`Snapshot test 1`] = `
                 "EventType": "viewer-request",
                 "FunctionARN": {
                   "Fn::GetAtt": [
-                    "CdnBasicAuthenticationFunction42EB65BB",
+                    "CdnSimpleAuthenticationFunction59BC4BE8",
                     "FunctionARN",
                   ],
                 },
@@ -309,7 +309,7 @@ exports[`Snapshot test 1`] = `
                 "IncludeBody": true,
                 "LambdaFunctionARN": {
                   "Fn::GetAtt": [
-                    "CdnHasherFnArnParameterCustomResource6EC40F22",
+                    "CdnContentsHashCalculatorFnArnCustomResourceE30056E6",
                     "Parameter.Value",
                   ],
                 },
@@ -339,7 +339,7 @@ exports[`Snapshot test 1`] = `
                       "/",
                       {
                         "Fn::GetAtt": [
-                          "AppFunctionWriteApiFunctionFunctionUrl043725AB",
+                          "AppFunctionsWriteApiFunctionFunctionUrl196CB77B",
                           "FunctionUrl",
                         ],
                       },
@@ -377,7 +377,7 @@ exports[`Snapshot test 1`] = `
         "Action": "lambda:InvokeFunctionUrl",
         "FunctionName": {
           "Fn::GetAtt": [
-            "AppFunctionWriteApiFunctionFunctionUrl043725AB",
+            "AppFunctionsWriteApiFunctionFunctionUrl196CB77B",
             "FunctionArn",
           ],
         },
@@ -404,55 +404,7 @@ exports[`Snapshot test 1`] = `
       },
       "Type": "AWS::Lambda::Permission",
     },
-    "CdnBasicAuthenticationFunction42EB65BB": {
-      "Properties": {
-        "AutoPublish": true,
-        "FunctionCode": "function handler(event) {
-    const request = event.request;
-    const headers = request.headers;
-
-    const authString = REPLACED;
-    
-    if (
-        typeof headers.authorization === "undefined" ||
-        headers.authorization.value !== authString
-    ) {
-        return {
-            statusCode: 401,
-            statusDescription: "Unauthorized",
-            headers: { "www-authenticate": { value: "Basic" } }
-        };
-    }
-    return request;
-}",
-        "FunctionConfig": {
-          "Comment": "ap-northeast-1Dev01-EventStoreticationFunctionC69A265E",
-          "Runtime": "cloudfront-js-2.0",
-        },
-        "Name": "ap-northeast-1Dev01-EventStoreticationFunctionC69A265E",
-      },
-      "Type": "AWS::CloudFront::Function",
-    },
-    "CdnHasherFnArnParameterCustomResource6EC40F22": {
-      "DeletionPolicy": "Delete",
-      "DependsOn": [
-        "CdnHasherFnArnParameterCustomResourceCustomResourcePolicy1D465181",
-      ],
-      "Properties": {
-        "Create": "{"service":"SSM","action":"getParameter","parameters":{"Name":"/event-store-adapter-rs-sample/edge-hasher-fn-arn"},"physicalResourceId":{"id":"PhysicalResourceId-1754233068638"},"region":"us-east-1"}",
-        "InstallLatestAwsSdk": true,
-        "ServiceToken": {
-          "Fn::GetAtt": [
-            "AWS679f53fac002430cb0da5b7982bd22872D164C4C",
-            "Arn",
-          ],
-        },
-        "Update": "{"service":"SSM","action":"getParameter","parameters":{"Name":"/event-store-adapter-rs-sample/edge-hasher-fn-arn"},"physicalResourceId":{"id":"PhysicalResourceId-1754233068638"},"region":"us-east-1"}",
-      },
-      "Type": "Custom::AWS",
-      "UpdateReplacePolicy": "Delete",
-    },
-    "CdnHasherFnArnParameterCustomResourceCustomResourcePolicy1D465181": {
+    "CdnContentsHashCalculatorFnArnCustomResourceCustomResourcePolicyA824D17F": {
       "Properties": {
         "PolicyDocument": {
           "Statement": [
@@ -479,7 +431,7 @@ exports[`Snapshot test 1`] = `
           ],
           "Version": "2012-10-17",
         },
-        "PolicyName": "CdnHasherFnArnParameterCustomResourceCustomResourcePolicy1D465181",
+        "PolicyName": "CdnContentsHashCalculatorFnArnCustomResourceCustomResourcePolicyA824D17F",
         "Roles": [
           {
             "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
@@ -487,6 +439,53 @@ exports[`Snapshot test 1`] = `
         ],
       },
       "Type": "AWS::IAM::Policy",
+    },
+    "CdnContentsHashCalculatorFnArnCustomResourceE30056E6": {
+      "DeletionPolicy": "Delete",
+      "DependsOn": [
+        "CdnContentsHashCalculatorFnArnCustomResourceCustomResourcePolicyA824D17F",
+      ],
+      "Properties": {
+        "Create": "{"service":"SSM","action":"getParameter","parameters":{"Name":"/event-store-adapter-rs-sample/contents-hash-calculator-fn-arn"},"physicalResourceId":{"id":"PhysicalResourceId-1754382633001"},"region":"us-east-1"}",
+        "InstallLatestAwsSdk": true,
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "AWS679f53fac002430cb0da5b7982bd22872D164C4C",
+            "Arn",
+          ],
+        },
+        "Update": "{"service":"SSM","action":"getParameter","parameters":{"Name":"/event-store-adapter-rs-sample/contents-hash-calculator-fn-arn"},"physicalResourceId":{"id":"PhysicalResourceId-1754382633001"},"region":"us-east-1"}",
+      },
+      "Type": "Custom::AWS",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "CdnSimpleAuthenticationFunction59BC4BE8": {
+      "Properties": {
+        "AutoPublish": true,
+        "FunctionCode": "function handler(event) {
+    const request = event.request;
+    const headers = request.headers;
+
+    const authString = REPLACED;
+    
+    if (
+        typeof headers["x-custom-authorization"] === "undefined" ||
+        headers["x-custom-authorization"].value !== authString
+    ) {
+        return {
+            statusCode: 401,
+            statusDescription: "Unauthorized",
+        };
+    }
+    return request;
+}",
+        "FunctionConfig": {
+          "Comment": "ap-northeast-1Dev01-EventStoreticationFunctionC9F5DF26",
+          "Runtime": "cloudfront-js-2.0",
+        },
+        "Name": "ap-northeast-1Dev01-EventStoreticationFunctionC9F5DF26",
+      },
+      "Type": "AWS::CloudFront::Function",
     },
     "EventStoreJournalTable120ADC96": {
       "DeletionPolicy": "Delete",
