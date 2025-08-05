@@ -1,7 +1,7 @@
 import { Stack, StackProps } from "aws-cdk-lib";
 import { Construct } from "constructs";
 
-import { AppFunction, Cdn, EventStore } from "../constructs";
+import { AppFunctions, Cdn, EventStore } from "../constructs";
 
 import { AppParameter, EnvType } from "../parameters";
 
@@ -23,7 +23,7 @@ export class EventStoreAdapterRsSampleStack extends Stack {
       snapshotGsiName: snapshotGsiName,
     });
 
-    const appFunction = new AppFunction(this, "AppFunction", {
+    const appFunctions = new AppFunctions(this, "AppFunctions", {
       apiParameter: props.appParameter.appFunctionParameter.apiParameter,
       journalTable: eventStore.journalTable,
       journalGsiName: journalGsiName,
@@ -32,7 +32,7 @@ export class EventStoreAdapterRsSampleStack extends Stack {
     });
 
     new Cdn(this, "Cdn", {
-      lambdaFunctionUrl: appFunction.writeApiFnUrl,
+      lambdaFunctionUrl: appFunctions.writeApiFnUrl,
       hasherFnArnParameterName: props.hasherFnArnParameterName,
     });
   }

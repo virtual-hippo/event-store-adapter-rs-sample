@@ -5,7 +5,7 @@ import { Construct } from "constructs";
 
 import { RustFunction } from "cargo-lambda-cdk";
 
-export interface AppFunctionProps {
+export interface AppFunctionsProps {
   readonly apiParameter: {
     readonly apiAllowOrigins: string[];
   };
@@ -15,13 +15,13 @@ export interface AppFunctionProps {
   readonly snapshotGsiName: string;
 }
 
-export class AppFunction extends Construct {
+export class AppFunctions extends Construct {
   /**
    * Write API の Lambda 関数の URL
    */
   readonly writeApiFnUrl: lambda.IFunctionUrl;
 
-  constructor(scope: Construct, id: string, props: AppFunctionProps) {
+  constructor(scope: Construct, id: string, props: AppFunctionsProps) {
     super(scope, id);
 
     {
