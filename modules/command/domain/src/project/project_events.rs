@@ -232,12 +232,13 @@ mod tests {
 
     #[test]
     fn test_to_json() {
+        let executer_id = UserId::default();
         let event = ProjectEvent::ProjectCreated(ProjectEventCreatedBody::new(
             ProjectId::default(),
             1usize,
             ProjectName::new("test").unwrap(),
-            Members::default(),
-            UserId::default(),
+            Members::new(executer_id.clone()),
+            executer_id,
             Utc::now(),
         ));
 
@@ -247,12 +248,13 @@ mod tests {
 
     #[test]
     fn test_is_created() {
+        let executer_id = UserId::default();
         let event = ProjectEvent::ProjectCreated(ProjectEventCreatedBody::new(
             ProjectId::default(),
             1usize,
             ProjectName::new("test").unwrap(),
-            Members::default(),
-            UserId::default(),
+            Members::new(executer_id.clone()),
+            executer_id,
             Utc::now(),
         ));
 

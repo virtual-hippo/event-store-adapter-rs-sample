@@ -315,7 +315,7 @@ mod tests {
     fn test_delete_project() {
         let executor_id = UserId::default();
         let user_id = UserId::default();
-        let mut members = Members::new();
+        let mut members = Members::new(executor_id.clone());
         members.add_member(Member::new(
             MemberId::default(),
             executor_id.clone(),
@@ -340,7 +340,7 @@ mod tests {
         let executor_id = UserId::default();
         let user_id = UserId::default();
         let member_id = MemberId::default();
-        let mut members = Members::new();
+        let mut members = Members::new(executor_id.clone());
         members.add_member(Member::new(
             MemberId::default(),
             executor_id.clone(),
@@ -370,7 +370,7 @@ mod tests {
         let executor_id = UserId::default();
         let user_id = UserId::default();
         let member_id = MemberId::default();
-        let mut members = Members::new();
+        let mut members = Members::new(executor_id.clone());
         members.add_member(Member::new(
             MemberId::default(),
             executor_id.clone(),
@@ -400,7 +400,7 @@ mod tests {
     fn test_to_json() {
         let executor_id = UserId::default();
         let project_name = ProjectName::new("test").unwrap();
-        let mut members = Members::new();
+        let mut members = Members::new(executor_id.clone());
         members.add_member(Member::new(
             MemberId::default(),
             executor_id.clone(),

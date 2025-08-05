@@ -13,11 +13,17 @@ pub struct Members {
 }
 
 impl Members {
-    pub fn new() -> Self {
-        Self {
+    pub fn new(administrator_id: UserId) -> Self {
+        let mut my_self = Self {
             members_ids_by_user_id: BTreeMap::new(),
             members: BTreeMap::new(),
-        }
+        };
+        my_self.add_member(Member::new(
+            MemberId::new(),
+            administrator_id,
+            MemberRole::Admin,
+        ));
+        my_self
     }
 
     /// 管理者かどうかを判定する
@@ -84,11 +90,5 @@ impl Members {
     /// メンバーの一覧を取得する
     pub fn to_vec(&self) -> Vec<&Member> {
         self.members.values().collect()
-    }
-}
-
-impl Default for Members {
-    fn default() -> Self {
-        Self::new()
     }
 }
