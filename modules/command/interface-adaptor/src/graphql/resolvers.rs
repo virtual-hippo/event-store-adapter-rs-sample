@@ -8,7 +8,9 @@ use command_interface_adaptor_if::ProjectRepositoryError;
 use command_processor::project_command_processor::CommandProcessError;
 
 use crate::gateways::project_repository::AwsDynamoDbProjectRepository;
-use crate::graphql::inputs::{AddMemberInput, CreateProjectInput, DeleteProjectInput, RemoveMemberInput};
+use crate::graphql::inputs::{
+    AddMemberInput, CreateProjectInput, DeleteProjectInput, RemoveMemberInput, RenameProjectInput,
+};
 use crate::graphql::outputs::ProjectOut;
 use crate::graphql::{ES, MutationRoot, ServiceContext};
 
@@ -69,6 +71,21 @@ impl MutationRoot {
 
         processor
             .remove_member(project_id, user_id, executor_id)
+            .await
+            .map(|project_id| ProjectOut::new(project_id.to_string()))
+            .map_err(error_handling)
+    }
+
+    async fn rename_project(&self, ctx: &Context<'_>, input: RenameProjectInput) -> FieldResult<ProjectOut> {
+        let service_ctx = ctx.data::<ServiceContext<AwsDynamoDbProjectRepository<ES>>>().unwrap();
+
+        let project_id = validate_project_id(&input.project_id)?;
+        let new_name = validate_project_name(&input.new_name)?;
+        let executor_id = validate_user_id(&input.executor_id)?;
+
+        let mut processor = service_ctx.project_command_processor.lock().await;
+        processor
+            .rename_project(project_id, new_name, executor_id)
             .await
             .map(|project_id| ProjectOut::new(project_id.to_string()))
             .map_err(error_handling)
