@@ -20,10 +20,10 @@ export class Cdn extends Construct {
   constructor(scope: Construct, id: string, props: CdnProps) {
     super(scope, id);
 
-    // 簡易的にBasic認証を用意しておく
-    const basicAuthenticationFunction = new cloudfront.Function(this, "BasicAuthenticationFunction", {
+    // 簡易的に認証を用意しておく
+    const simpleAuthenticationFunction = new cloudfront.Function(this, "SimpleAuthenticationFunction", {
       code: cloudfront.FunctionCode.fromFile({
-        filePath: path.join(__dirname, "../../", "assets/cloudfront-function/basic-authentication.js"),
+        filePath: path.join(__dirname, "../../", "assets/cloudfront-function/simple-authentication.js"),
       }),
       runtime: cloudfront.FunctionRuntime.JS_2_0,
     });
@@ -40,7 +40,7 @@ export class Cdn extends Construct {
         responseHeadersPolicy: cloudfront.ResponseHeadersPolicy.SECURITY_HEADERS,
         functionAssociations: [
           {
-            function: basicAuthenticationFunction,
+            function: simpleAuthenticationFunction,
             eventType: cloudfront.FunctionEventType.VIEWER_REQUEST,
           },
         ],
