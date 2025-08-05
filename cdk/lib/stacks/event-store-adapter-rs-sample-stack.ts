@@ -8,7 +8,7 @@ import { AppParameter, EnvType } from "../parameters";
 export interface EventStoreAdapterRsSampleStackProps extends StackProps {
   readonly appParameter: AppParameter;
   readonly envType: EnvType;
-  readonly hasherFnArnParameterName: string;
+  readonly contentsHashCalculatorFnArnParameterName: string;
 }
 
 export class EventStoreAdapterRsSampleStack extends Stack {
@@ -33,7 +33,7 @@ export class EventStoreAdapterRsSampleStack extends Stack {
 
     new Cdn(this, "Cdn", {
       lambdaFunctionUrl: appFunctions.writeApiFnUrl,
-      hasherFnArnParameterName: props.hasherFnArnParameterName,
+      contentsHashCalculatorFnArnParameterName: props.contentsHashCalculatorFnArnParameterName,
     });
   }
 }

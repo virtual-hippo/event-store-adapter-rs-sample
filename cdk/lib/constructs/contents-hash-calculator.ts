@@ -9,18 +9,18 @@ import {
 } from "aws-cdk-lib";
 import { Construct } from "constructs";
 
-export class Hasher extends Construct {
-  readonly hasherFnArnParameterName = "/event-store-adapter-rs-sample/edge-hasher-fn-arn" as const;
+export class ContentsHashCalculator extends Construct {
+  readonly fnArnParameterName = "/event-store-adapter-rs-sample/contents-hash-calculator-fn-arn" as const;
 
   constructor(scope: Construct, id: string) {
     super(scope, id);
 
-    const hasherFn = new lambda_nodejs.NodejsFunction(this, "EdgeHasherFn", {
+    const fn = new lambda_nodejs.NodejsFunction(this, "Fn", {
       runtime: lambda.Runtime.NODEJS_22_X,
-      entry: path.join(__dirname, "../../", "assets/lambda-at-edge/hasher.ts"),
+      entry: path.join(__dirname, "../../", "assets/lambda-at-edge/contents-hash-calculator.ts"),
       handler: "handler",
       timeout: Duration.seconds(5),
-      role: new iam.Role(this, "EdgeHasherFnRole", {
+      role: new iam.Role(this, "FnRole", {
         assumedBy: new iam.CompositePrincipal(
           new iam.ServicePrincipal("lambda.amazonaws.com"),
           new iam.ServicePrincipal("edgelambda.amazonaws.com"),
@@ -29,10 +29,10 @@ export class Hasher extends Construct {
       }),
     });
 
-    new ssm.StringParameter(this, "EdgeHasherFnArn", {
-      description: "The EdgeHasherFn ARN for event-store-adapter-rs-sample",
-      parameterName: this.hasherFnArnParameterName,
-      stringValue: hasherFn.currentVersion.functionArn,
+    new ssm.StringParameter(this, "FnArnParameter", {
+      description: "The ContentsHashCalculatorFn ARN for event-store-adapter-rs-sample",
+      parameterName: this.fnArnParameterName,
+      stringValue: fn.currentVersion.functionArn,
       tier: ssm.ParameterTier.STANDARD,
     });
   }

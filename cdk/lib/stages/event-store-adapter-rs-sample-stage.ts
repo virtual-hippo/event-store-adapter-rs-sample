@@ -36,7 +36,7 @@ export class EventStoreAdapterRsSampleStage extends cdk.Stage {
       // custome props
       envType: props.envType,
       appParameter: props.appParameter,
-      hasherFnArnParameterName: globalSecurityStack.hasherFnArnParameterName,
+      contentsHashCalculatorFnArnParameterName: globalSecurityStack.contentsHashCalculatorFnArnParameterName,
     });
 
     eventStoreAdapterRsSampleStack.addDependency(globalSecurityStack);
