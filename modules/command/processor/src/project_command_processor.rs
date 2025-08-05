@@ -35,7 +35,7 @@ impl<TR: ProjectRepository> ProjectCommandProcessor<TR> {
     ) -> Result<ProjectId, CommandProcessError> {
         let mut repository_mg = self.project_repository.lock().await;
 
-        let members = Members::new();
+        let members = Members::new(executor_id.clone());
         let (project, project_event) = Project::new(name, members, executor_id);
 
         repository_mg
