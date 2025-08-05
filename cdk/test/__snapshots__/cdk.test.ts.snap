@@ -3,14 +3,6 @@
 exports[`Snapshot test 1`] = `
 {
   "Outputs": {
-    "AppFunctionWriteApiFunctionUrl1AE33250": {
-      "Value": {
-        "Fn::GetAtt": [
-          "AppFunctionWriteApiFunctionFunctionUrl043725AB",
-          "FunctionUrl",
-        ],
-      },
-    },
     "CdnApiEndpoint143E168B": {
       "Description": "API Endpoint URL",
       "Value": {
@@ -93,6 +85,7 @@ exports[`Snapshot test 1`] = `
     },
     "AppFunctionWriteApiFunction3C482938": {
       "DependsOn": [
+        "AppFunctionWriteApiFunctionServiceRoleDefaultPolicyA98DF956",
         "AppFunctionWriteApiFunctionServiceRole89C3ED13",
       ],
       "Properties": {
@@ -108,16 +101,17 @@ exports[`Snapshot test 1`] = `
         "Environment": {
           "Variables": {
             "APP__API__ALLOW_ORIGINS": "http://localhost:3000,http://localhost:5173,http://localhost:8080",
-            "APP__AWS__ACCESS_KEY_ID": "x",
-            "APP__AWS__ENDPOINT_URL": "x",
             "APP__AWS__REGION_NAME": "ap-northeast-1",
-            "APP__AWS__SECRET_ACCESS_KEY": "x",
-            "APP__PERSISTENCE__JOURNAL_AID_INDEX_NAME": "journal-aid-index",
-            "APP__PERSISTENCE__JOURNAL_TABLE_NAME": "journal",
+            "APP__PERSISTENCE__JOURNAL_AID_INDEX_NAME": "Dev01-journal-aid-index",
+            "APP__PERSISTENCE__JOURNAL_TABLE_NAME": {
+              "Ref": "EventStoreJournalTable120ADC96",
+            },
             "APP__PERSISTENCE__SHARD_COUNT": "64",
-            "APP__PERSISTENCE__SNAPSHOT_AID_INDEX_NAME": "snapshot-aid-index",
+            "APP__PERSISTENCE__SNAPSHOT_AID_INDEX_NAME": "Dev01-snapshot-aid-index",
             "APP__PERSISTENCE__SNAPSHOT_INTERVAL": "10",
-            "APP__PERSISTENCE__SNAPSHOT_TABLE_NAME": "snapshot",
+            "APP__PERSISTENCE__SNAPSHOT_TABLE_NAME": {
+              "Ref": "EventStoreSnapshotTable7442018E",
+            },
           },
         },
         "Handler": "bootstrap",
@@ -187,6 +181,100 @@ exports[`Snapshot test 1`] = `
         ],
       },
       "Type": "AWS::IAM::Role",
+    },
+    "AppFunctionWriteApiFunctionServiceRoleDefaultPolicyA98DF956": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "dynamodb:BatchGetItem",
+                "dynamodb:GetRecords",
+                "dynamodb:GetShardIterator",
+                "dynamodb:Query",
+                "dynamodb:GetItem",
+                "dynamodb:Scan",
+                "dynamodb:ConditionCheckItem",
+                "dynamodb:BatchWriteItem",
+                "dynamodb:PutItem",
+                "dynamodb:UpdateItem",
+                "dynamodb:DeleteItem",
+                "dynamodb:DescribeTable",
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "EventStoreJournalTable120ADC96",
+                    "Arn",
+                  ],
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "EventStoreJournalTable120ADC96",
+                          "Arn",
+                        ],
+                      },
+                      "/index/*",
+                    ],
+                  ],
+                },
+              ],
+            },
+            {
+              "Action": [
+                "dynamodb:BatchGetItem",
+                "dynamodb:GetRecords",
+                "dynamodb:GetShardIterator",
+                "dynamodb:Query",
+                "dynamodb:GetItem",
+                "dynamodb:Scan",
+                "dynamodb:ConditionCheckItem",
+                "dynamodb:BatchWriteItem",
+                "dynamodb:PutItem",
+                "dynamodb:UpdateItem",
+                "dynamodb:DeleteItem",
+                "dynamodb:DescribeTable",
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "EventStoreSnapshotTable7442018E",
+                    "Arn",
+                  ],
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "EventStoreSnapshotTable7442018E",
+                          "Arn",
+                        ],
+                      },
+                      "/index/*",
+                    ],
+                  ],
+                },
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "AppFunctionWriteApiFunctionServiceRoleDefaultPolicyA98DF956",
+        "Roles": [
+          {
+            "Ref": "AppFunctionWriteApiFunctionServiceRole89C3ED13",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
     },
     "CdnApiDistribution0EF35839": {
       "Properties": {
@@ -351,7 +439,7 @@ exports[`Snapshot test 1`] = `
         "CdnHasherFnArnParameterCustomResourceCustomResourcePolicy1D465181",
       ],
       "Properties": {
-        "Create": "{"service":"SSM","action":"getParameter","parameters":{"Name":"/event-store-adapter-rs-sample/edge-hasher-fn-arn"},"physicalResourceId":{"id":"PhysicalResourceId-1754189395134"},"region":"us-east-1"}",
+        "Create": "{"service":"SSM","action":"getParameter","parameters":{"Name":"/event-store-adapter-rs-sample/edge-hasher-fn-arn"},"physicalResourceId":{"id":"PhysicalResourceId-1754233068638"},"region":"us-east-1"}",
         "InstallLatestAwsSdk": true,
         "ServiceToken": {
           "Fn::GetAtt": [
@@ -359,7 +447,7 @@ exports[`Snapshot test 1`] = `
             "Arn",
           ],
         },
-        "Update": "{"service":"SSM","action":"getParameter","parameters":{"Name":"/event-store-adapter-rs-sample/edge-hasher-fn-arn"},"physicalResourceId":{"id":"PhysicalResourceId-1754189395134"},"region":"us-east-1"}",
+        "Update": "{"service":"SSM","action":"getParameter","parameters":{"Name":"/event-store-adapter-rs-sample/edge-hasher-fn-arn"},"physicalResourceId":{"id":"PhysicalResourceId-1754233068638"},"region":"us-east-1"}",
       },
       "Type": "Custom::AWS",
       "UpdateReplacePolicy": "Delete",
@@ -399,6 +487,211 @@ exports[`Snapshot test 1`] = `
         ],
       },
       "Type": "AWS::IAM::Policy",
+    },
+    "EventStoreJournalTable120ADC96": {
+      "DeletionPolicy": "Delete",
+      "Properties": {
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "pkey",
+            "AttributeType": "S",
+          },
+          {
+            "AttributeName": "skey",
+            "AttributeType": "S",
+          },
+          {
+            "AttributeName": "aid",
+            "AttributeType": "S",
+          },
+          {
+            "AttributeName": "seq_nr",
+            "AttributeType": "N",
+          },
+        ],
+        "BillingMode": "PROVISIONED",
+        "GlobalSecondaryIndexes": [
+          {
+            "IndexName": "Dev01-journal-aid-index",
+            "KeySchema": [
+              {
+                "AttributeName": "aid",
+                "KeyType": "HASH",
+              },
+              {
+                "AttributeName": "seq_nr",
+                "KeyType": "RANGE",
+              },
+            ],
+            "Projection": {
+              "ProjectionType": "ALL",
+            },
+            "WriteProvisionedThroughputSettings": {
+              "WriteCapacityAutoScalingSettings": {
+                "MaxCapacity": 10,
+                "MinCapacity": 1,
+                "TargetTrackingScalingPolicyConfiguration": {
+                  "TargetValue": 70,
+                },
+              },
+            },
+          },
+        ],
+        "KeySchema": [
+          {
+            "AttributeName": "pkey",
+            "KeyType": "HASH",
+          },
+          {
+            "AttributeName": "skey",
+            "KeyType": "RANGE",
+          },
+        ],
+        "Replicas": [
+          {
+            "GlobalSecondaryIndexes": [
+              {
+                "IndexName": "Dev01-journal-aid-index",
+                "ReadProvisionedThroughputSettings": {
+                  "ReadCapacityAutoScalingSettings": {
+                    "MaxCapacity": 10,
+                    "MinCapacity": 1,
+                    "TargetTrackingScalingPolicyConfiguration": {
+                      "TargetValue": 70,
+                    },
+                  },
+                },
+              },
+            ],
+            "ReadProvisionedThroughputSettings": {
+              "ReadCapacityAutoScalingSettings": {
+                "MaxCapacity": 10,
+                "MinCapacity": 1,
+                "TargetTrackingScalingPolicyConfiguration": {
+                  "TargetValue": 70,
+                },
+              },
+            },
+            "Region": "ap-northeast-1",
+            "TableClass": "STANDARD_INFREQUENT_ACCESS",
+          },
+        ],
+        "StreamSpecification": {
+          "StreamViewType": "NEW_IMAGE",
+        },
+        "WriteProvisionedThroughputSettings": {
+          "WriteCapacityAutoScalingSettings": {
+            "MaxCapacity": 10,
+            "MinCapacity": 1,
+            "TargetTrackingScalingPolicyConfiguration": {
+              "TargetValue": 70,
+            },
+          },
+        },
+      },
+      "Type": "AWS::DynamoDB::GlobalTable",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "EventStoreSnapshotTable7442018E": {
+      "DeletionPolicy": "Delete",
+      "Properties": {
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "pkey",
+            "AttributeType": "S",
+          },
+          {
+            "AttributeName": "skey",
+            "AttributeType": "S",
+          },
+          {
+            "AttributeName": "aid",
+            "AttributeType": "S",
+          },
+          {
+            "AttributeName": "seq_nr",
+            "AttributeType": "N",
+          },
+        ],
+        "BillingMode": "PROVISIONED",
+        "GlobalSecondaryIndexes": [
+          {
+            "IndexName": "Dev01-snapshot-aid-index",
+            "KeySchema": [
+              {
+                "AttributeName": "aid",
+                "KeyType": "HASH",
+              },
+              {
+                "AttributeName": "seq_nr",
+                "KeyType": "RANGE",
+              },
+            ],
+            "Projection": {
+              "ProjectionType": "ALL",
+            },
+            "WriteProvisionedThroughputSettings": {
+              "WriteCapacityAutoScalingSettings": {
+                "MaxCapacity": 10,
+                "MinCapacity": 1,
+                "TargetTrackingScalingPolicyConfiguration": {
+                  "TargetValue": 70,
+                },
+              },
+            },
+          },
+        ],
+        "KeySchema": [
+          {
+            "AttributeName": "pkey",
+            "KeyType": "HASH",
+          },
+          {
+            "AttributeName": "skey",
+            "KeyType": "RANGE",
+          },
+        ],
+        "Replicas": [
+          {
+            "GlobalSecondaryIndexes": [
+              {
+                "IndexName": "Dev01-snapshot-aid-index",
+                "ReadProvisionedThroughputSettings": {
+                  "ReadCapacityAutoScalingSettings": {
+                    "MaxCapacity": 10,
+                    "MinCapacity": 1,
+                    "TargetTrackingScalingPolicyConfiguration": {
+                      "TargetValue": 70,
+                    },
+                  },
+                },
+              },
+            ],
+            "ReadProvisionedThroughputSettings": {
+              "ReadCapacityAutoScalingSettings": {
+                "MaxCapacity": 10,
+                "MinCapacity": 1,
+                "TargetTrackingScalingPolicyConfiguration": {
+                  "TargetValue": 70,
+                },
+              },
+            },
+            "Region": "ap-northeast-1",
+            "TableClass": "STANDARD_INFREQUENT_ACCESS",
+          },
+        ],
+        "WriteProvisionedThroughputSettings": {
+          "WriteCapacityAutoScalingSettings": {
+            "MaxCapacity": 10,
+            "MinCapacity": 1,
+            "TargetTrackingScalingPolicyConfiguration": {
+              "TargetValue": 70,
+            },
+          },
+        },
+      },
+      "Type": "AWS::DynamoDB::GlobalTable",
+      "UpdateReplacePolicy": "Delete",
     },
   },
   "Rules": {

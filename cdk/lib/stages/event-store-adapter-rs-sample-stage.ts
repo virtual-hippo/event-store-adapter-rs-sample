@@ -24,6 +24,7 @@ export class EventStoreAdapterRsSampleStage extends cdk.Stage {
     });
 
     const eventStoreAdapterRsSampleStack = new EventStoreAdapterRsSampleStack(this, "EventStoreAdapterRsSample", {
+      // stack props
       env: {
         account: props.appParameter.env.account || process.env.CDK_DEFAULT_ACCOUNT,
         region: props.appParameter.env.region || process.env.CDK_DEFAULT_ACCOUNT,
@@ -32,6 +33,8 @@ export class EventStoreAdapterRsSampleStage extends cdk.Stage {
         Environment: props.envType,
         SysName: "event-store-adapter-rs-sample",
       },
+      // custome props
+      envType: props.envType,
       appParameter: props.appParameter,
       hasherFnArnParameterName: globalSecurityStack.hasherFnArnParameterName,
     });
