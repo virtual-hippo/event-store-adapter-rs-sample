@@ -26,3 +26,10 @@ pub struct RemoveMemberInput {
     pub user_id: String,
     pub executor_id: String,
 }
+
+#[derive(Debug, Clone, InputObject)]
+pub struct RenameProjectInput {
+    pub project_id: String,
+    pub new_name: String,
+    pub executor_id: String,
+}

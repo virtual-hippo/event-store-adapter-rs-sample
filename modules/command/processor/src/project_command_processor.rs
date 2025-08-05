@@ -35,7 +35,7 @@ impl<TR: ProjectRepository> ProjectCommandProcessor<TR> {
     ) -> Result<ProjectId, CommandProcessError> {
         let mut repository_mg = self.project_repository.lock().await;
 
-        let members = Members::new();
+        let members = Members::new(executor_id.clone());
         let (project, project_event) = Project::new(name, members, executor_id);
 
         repository_mg
@@ -88,6 +88,31 @@ impl<TR: ProjectRepository> ProjectCommandProcessor<TR> {
 
         let project_event = project
             .remove_member(user_id, executor_id)
+            .map_err(CommandProcessError::DomainLogicError)?;
+
+        repository_mg
+            .store(&project_event, &project)
+            .await
+            .map(|_| project_event.aggregate_id().clone())
+            .map_err(CommandProcessError::RepositoryError)
+    }
+
+    pub async fn rename_project(
+        &mut self,
+        project_id: ProjectId,
+        new_name: ProjectName,
+        executor_id: UserId,
+    ) -> Result<ProjectId, CommandProcessError> {
+        let mut repository_mg = self.project_repository.lock().await;
+
+        let mut project = repository_mg
+            .find_by_id(&project_id)
+            .await
+            .map_err(CommandProcessError::RepositoryError)?
+            .ok_or(CommandProcessError::NotFoundError)?;
+
+        let project_event = project
+            .rename(new_name, executor_id)
             .map_err(CommandProcessError::DomainLogicError)?;
 
         repository_mg

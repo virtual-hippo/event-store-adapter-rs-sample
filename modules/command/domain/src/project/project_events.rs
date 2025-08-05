@@ -24,6 +24,8 @@ pub enum ProjectEvent {
     ProjectMemberAdded(ProjectEventMemberAddedBody),
     /// プロジェクトのメンバーが削除された
     ProjectMemberRemoved(ProjectEventMemberRemovedBody),
+    /// プロジェクト名が変更された
+    ProjectRenamed(ProjectEventRenamedBody),
 }
 
 impl Event for ProjectEvent {
@@ -36,6 +38,7 @@ impl Event for ProjectEvent {
             ProjectEvent::ProjectDeleted(event) => &event.id,
             ProjectEvent::ProjectMemberAdded(event) => &event.id,
             ProjectEvent::ProjectMemberRemoved(event) => &event.id,
+            ProjectEvent::ProjectRenamed(event) => &event.id,
         }
     }
 
@@ -45,6 +48,7 @@ impl Event for ProjectEvent {
             ProjectEvent::ProjectDeleted(event) => event.seq_nr,
             ProjectEvent::ProjectMemberAdded(event) => event.seq_nr,
             ProjectEvent::ProjectMemberRemoved(event) => event.seq_nr,
+            ProjectEvent::ProjectRenamed(event) => event.seq_nr,
         }
     }
 
@@ -54,6 +58,7 @@ impl Event for ProjectEvent {
             ProjectEvent::ProjectDeleted(event) => &event.aggregate_id,
             ProjectEvent::ProjectMemberAdded(event) => &event.aggregate_id,
             ProjectEvent::ProjectMemberRemoved(event) => &event.aggregate_id,
+            ProjectEvent::ProjectRenamed(event) => &event.aggregate_id,
         }
     }
 
@@ -63,6 +68,7 @@ impl Event for ProjectEvent {
             ProjectEvent::ProjectDeleted(event) => &event.occurred_at,
             ProjectEvent::ProjectMemberAdded(event) => &event.occurred_at,
             ProjectEvent::ProjectMemberRemoved(event) => &event.occurred_at,
+            ProjectEvent::ProjectRenamed(event) => &event.occurred_at,
         }
     }
 
@@ -186,6 +192,36 @@ impl ProjectEventMemberRemovedBody {
     }
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ProjectEventRenamedBody {
+    pub id: ProjectEventId,
+    pub aggregate_id: ProjectId,
+    pub seq_nr: usize,
+    pub new_name: ProjectName,
+    pub executor_id: UserId,
+    pub occurred_at: DateTime<Utc>,
+}
+
+impl ProjectEventRenamedBody {
+    pub fn new(
+        aggregate_id: ProjectId,
+        seq_nr: usize,
+        new_name: ProjectName,
+        executor_id: UserId,
+        occurred_at: DateTime<Utc>,
+    ) -> Self {
+        let id = id_generate();
+        Self {
+            id,
+            aggregate_id,
+            seq_nr,
+            new_name,
+            executor_id,
+            occurred_at,
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use crate::project::project_events::{ProjectEvent, ProjectEventCreatedBody};
@@ -196,12 +232,13 @@ mod tests {
 
     #[test]
     fn test_to_json() {
+        let executer_id = UserId::default();
         let event = ProjectEvent::ProjectCreated(ProjectEventCreatedBody::new(
             ProjectId::default(),
             1usize,
             ProjectName::new("test").unwrap(),
-            Members::default(),
-            UserId::default(),
+            Members::new(executer_id.clone()),
+            executer_id,
             Utc::now(),
         ));
 
@@ -211,12 +248,13 @@ mod tests {
 
     #[test]
     fn test_is_created() {
+        let executer_id = UserId::default();
         let event = ProjectEvent::ProjectCreated(ProjectEventCreatedBody::new(
             ProjectId::default(),
             1usize,
             ProjectName::new("test").unwrap(),
-            Members::default(),
-            UserId::default(),
+            Members::new(executer_id.clone()),
+            executer_id,
             Utc::now(),
         ));
 

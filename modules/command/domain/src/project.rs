@@ -18,7 +18,7 @@ pub use crate::project::members::Members;
 pub use crate::project::project_error::ProjectError;
 pub use crate::project::project_events::{
     ProjectEvent, ProjectEventCreatedBody, ProjectEventDeletedBody, ProjectEventMemberAddedBody,
-    ProjectEventMemberRemovedBody,
+    ProjectEventMemberRemovedBody, ProjectEventRenamedBody,
 };
 pub use crate::project::project_id::ProjectId;
 pub use crate::project::project_name::ProjectName;
@@ -119,6 +119,9 @@ impl Project {
             },
             ProjectEvent::ProjectMemberRemoved(body) => {
                 self.remove_member(body.user_id.clone(), body.executor_id.clone()).unwrap();
+            },
+            ProjectEvent::ProjectRenamed(body) => {
+                self.rename(body.new_name.clone(), body.executor_id.clone()).unwrap();
             },
             _ => {},
         }
@@ -262,6 +265,46 @@ impl Project {
             ),
         ))
     }
+
+    /// プロジェクト名を変更する
+    ///
+    /// # 引数
+    /// - new_name: 新しいプロジェクト名
+    /// - executor_id: 実行者のユーザID
+    ///
+    /// # 戻り値
+    /// - プロジェクトが削除されている場合はエラーを返す。
+    /// - 実行者がメンバーでない場合はエラーを返す。
+    /// - 実行者が管理者でない場合はエラーを返す。
+    /// - 成功した場合は、ProjectRenamedイベントを返す。
+    pub fn rename(&mut self, new_name: ProjectName, executor_id: UserId) -> Result<ProjectEvent, ProjectError> {
+        if self.deleted {
+            return Err(ProjectError::AlreadyDeletedError(self.id.clone()));
+        }
+        if !self.members.is_member(&executor_id) {
+            return Err(ProjectError::NotMemberError(
+                "executor_id".to_string(),
+                executor_id,
+            ));
+        }
+        if !self.members.is_administrator(&executor_id) {
+            return Err(ProjectError::NotAdministratorError(
+                "executor_id".to_string(),
+                executor_id,
+            ));
+        }
+
+        self.name = new_name.clone();
+        self.seq_nr_counter += 1;
+        let now = Utc::now();
+        Ok(ProjectEvent::ProjectRenamed(ProjectEventRenamedBody::new(
+            self.id.clone(),
+            self.seq_nr_counter,
+            new_name,
+            executor_id,
+            now,
+        )))
+    }
 }
 
 #[cfg(test)]
@@ -272,7 +315,7 @@ mod tests {
     fn test_delete_project() {
         let executor_id = UserId::default();
         let user_id = UserId::default();
-        let mut members = Members::new();
+        let mut members = Members::new(executor_id.clone());
         members.add_member(Member::new(
             MemberId::default(),
             executor_id.clone(),
@@ -297,7 +340,7 @@ mod tests {
         let executor_id = UserId::default();
         let user_id = UserId::default();
         let member_id = MemberId::default();
-        let mut members = Members::new();
+        let mut members = Members::new(executor_id.clone());
         members.add_member(Member::new(
             MemberId::default(),
             executor_id.clone(),
@@ -327,7 +370,7 @@ mod tests {
         let executor_id = UserId::default();
         let user_id = UserId::default();
         let member_id = MemberId::default();
-        let mut members = Members::new();
+        let mut members = Members::new(executor_id.clone());
         members.add_member(Member::new(
             MemberId::default(),
             executor_id.clone(),
@@ -357,7 +400,7 @@ mod tests {
     fn test_to_json() {
         let executor_id = UserId::default();
         let project_name = ProjectName::new("test").unwrap();
-        let mut members = Members::new();
+        let mut members = Members::new(executor_id.clone());
         members.add_member(Member::new(
             MemberId::default(),
             executor_id.clone(),
