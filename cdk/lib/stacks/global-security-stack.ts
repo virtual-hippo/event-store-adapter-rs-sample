@@ -1,16 +1,16 @@
 import { Stack, StackProps } from "aws-cdk-lib";
 import { Construct } from "constructs";
 
-import { Hasher } from "../constructs";
+import { ContentsHashCalculator } from "../constructs";
 
 export class GlobalSecurityStack extends Stack {
-  readonly hasherFnArnParameterName: string;
+  readonly contentsHashCalculatorFnArnParameterName: string;
 
   constructor(scope: Construct, id: string, props: StackProps) {
     super(scope, id, props);
 
-    const hasher = new Hasher(this, "Hasher");
+    const contentsHashCalculator = new ContentsHashCalculator(this, "ContentsHashCalculator");
 
-    this.hasherFnArnParameterName = hasher.hasherFnArnParameterName;
+    this.contentsHashCalculatorFnArnParameterName = contentsHashCalculator.fnArnParameterName;
   }
 }

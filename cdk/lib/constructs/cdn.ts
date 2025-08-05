@@ -13,17 +13,17 @@ import { Construct } from "constructs";
 
 export interface CdnProps {
   readonly lambdaFunctionUrl: lambda.IFunctionUrl;
-  readonly hasherFnArnParameterName: string;
+  readonly contentsHashCalculatorFnArnParameterName: string;
 }
 
 export class Cdn extends Construct {
   constructor(scope: Construct, id: string, props: CdnProps) {
     super(scope, id);
 
-    // 簡易的にBasic認証を用意しておく
-    const basicAuthenticationFunction = new cloudfront.Function(this, "BasicAuthenticationFunction", {
+    // 簡易的に認証を用意しておく
+    const simpleAuthenticationFunction = new cloudfront.Function(this, "SimpleAuthenticationFunction", {
       code: cloudfront.FunctionCode.fromFile({
-        filePath: path.join(__dirname, "../../", "assets/cloudfront-function/basic-authentication.js"),
+        filePath: path.join(__dirname, "../../", "assets/cloudfront-function/simple-authentication.js"),
       }),
       runtime: cloudfront.FunctionRuntime.JS_2_0,
     });
@@ -40,7 +40,7 @@ export class Cdn extends Construct {
         responseHeadersPolicy: cloudfront.ResponseHeadersPolicy.SECURITY_HEADERS,
         functionAssociations: [
           {
-            function: basicAuthenticationFunction,
+            function: simpleAuthenticationFunction,
             eventType: cloudfront.FunctionEventType.VIEWER_REQUEST,
           },
         ],
@@ -49,8 +49,8 @@ export class Cdn extends Construct {
             eventType: cloudfront.LambdaEdgeEventType.ORIGIN_REQUEST,
             functionVersion: lambda.Version.fromVersionArn(
               this,
-              "EdgeHasherFnVersion",
-              this.getLambdaEdgeArn(props.hasherFnArnParameterName),
+              "EdgeContentsHashCalculatorFnVersion",
+              this.getContentsHashCalculatorFnArn(props.contentsHashCalculatorFnArnParameterName),
             ),
             includeBody: true,
           },
@@ -67,33 +67,38 @@ export class Cdn extends Construct {
     });
   }
 
-  private getLambdaEdgeArn(hasherFnArnParameterName: string): string {
+  private getContentsHashCalculatorFnArn(contentsHashCalculatorFnArnParameterName: string): string {
     const stack = Stack.of(this);
 
     // コンテンツハッシュ計算用の Lambda 関数の ARN を SSM パラメータから取得するカスタムリソース
-    const hasherFnArnParameter = new AwsCustomResource(this, "HasherFnArnParameterCustomResource", {
-      policy: AwsCustomResourcePolicy.fromStatements([
-        new iam.PolicyStatement({
-          effect: iam.Effect.ALLOW,
-          actions: ["ssm:GetParameter*"],
-          resources: [
-            stack.formatArn({
-              service: "ssm",
-              region: "us-east-1",
-              resource: "*",
-            }),
-          ],
-        }),
-      ]),
-      onUpdate: {
-        service: "SSM",
-        action: "getParameter",
-        parameters: { Name: hasherFnArnParameterName },
-        physicalResourceId: PhysicalResourceId.of(`PhysicalResourceId-${Date.now()}`),
-        region: "us-east-1",
-      },
-    });
+    const contentsHashCalculatorFnArnCustomResource = new AwsCustomResource(
+      this,
+      "ContentsHashCalculatorFnArnCustomResource",
+      {
+        policy: AwsCustomResourcePolicy.fromStatements([
+          new iam.PolicyStatement({
+            effect: iam.Effect.ALLOW,
+            actions: ["ssm:GetParameter*"],
+            resources: [
+              stack.formatArn({
+                service: "ssm",
+                region: "us-east-1",
+                resource: "*",
+              }),
+            ],
+          }),
+        ]),
 
-    return hasherFnArnParameter.getResponseField("Parameter.Value");
+        onUpdate: {
+          service: "SSM",
+          action: "getParameter",
+          parameters: { Name: contentsHashCalculatorFnArnParameterName },
+          physicalResourceId: PhysicalResourceId.of(`PhysicalResourceId-${Date.now()}`),
+          region: "us-east-1",
+        },
+      },
+    );
+
+    return contentsHashCalculatorFnArnCustomResource.getResponseField("Parameter.Value");
   }
 }
