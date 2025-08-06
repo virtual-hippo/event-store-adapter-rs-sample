@@ -7,8 +7,10 @@ export const serializer = {
   test: (val: unknown) => typeof val === "string",
   serialize: (val: string) => {
     return `"${val
-      //
+      // cloudfront function の簡易認証に使う authString をダミー値に置き換え
       .replace(/const authString = (.+);/, "const authString = REPLACED;")
+      // PhysicalResourceId の unix timestamp をダミー値に置き換え
+      .replace(/(PhysicalResourceId-[0-9]{13})/, "PhysicalResourceId-REPLACED")
       // Asset hash をダミー値に置き換え
       .replace(/([A-Fa-f0-9]{64}.zip)/, "HASH_REPLACED.zip")
       // Construct address をダミー値に置き換え

@@ -49,14 +49,6 @@ struct AwsSettings {
 
 #[tokio::main]
 async fn main() -> Result<(), Error> {
-    // If you use API Gateway stages, the Rust Runtime will include the stage name
-    // as part of the path that your application receives.
-    // Setting the following environment variable, you can remove the stage from the path.
-    // This variable only applies to API Gateway stages,
-    // you can remove it if you don't use them.
-    // i.e with: `GET /test-stage/todo/id/123` without: `GET /todo/id/123`
-    set_var("AWS_LAMBDA_HTTP_IGNORE_STAGE_IN_PATH", "true");
-
     // required to enable CloudWatch error logging by the runtime
     tracing::subscriber::fmt()
         .with_max_level(tracing::Level::DEBUG)
@@ -139,22 +131,20 @@ async fn create_aws_client(aws_settings: &AwsSettings) -> Client {
         config_loader = config_loader.endpoint_url(endpoint_url);
     }
 
-    match (
+    // ローカル実行時用の設定
+    if let (Some(access_key_id), Some(secret_access_key)) = (
         aws_settings.access_key_id.clone(),
         aws_settings.secret_access_key.clone(),
     ) {
-        (Some(access_key_id), Some(secret_access_key)) => {
-            tracing::info!("access_key_id = {}", access_key_id);
-            tracing::info!("secret_access_key = {}", secret_access_key);
-            config_loader = config_loader.credentials_provider(Credentials::new(
-                access_key_id,
-                secret_access_key,
-                None,
-                None,
-                "default",
-            ));
-        },
-        _ => {},
+        tracing::debug!("access_key_id = {}", access_key_id);
+        tracing::debug!("secret_access_key = {}", secret_access_key);
+        config_loader = config_loader.credentials_provider(Credentials::new(
+            access_key_id,
+            secret_access_key,
+            None,
+            None,
+            "default",
+        ));
     }
 
     let config = config_loader.load().await;

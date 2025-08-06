@@ -59,9 +59,9 @@ script = '''
 #!/usr/bin/env bash
 cd cdk
 pnpm i --frozen-lockfile
-pnpm fmt:ci
-pnpm lint:ci
-pnpm test
+pnpm fmt:ci && \
+pnpm lint:ci && \
+pnpm test:run
 '''
 
 [tasks.deploy]
@@ -74,5 +74,5 @@ script = '''
 #!/usr/bin/env bash
 cd cdk
 pnpm i --frozen-lockfile
-pnpm cdk deploy Dev01/EventStoreAdapterRsSample
+pnpm cdk deploy Dev01/*
 '''

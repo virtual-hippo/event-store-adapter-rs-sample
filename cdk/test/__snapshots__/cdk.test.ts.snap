@@ -446,7 +446,7 @@ exports[`Snapshot test 1`] = `
         "CdnContentsHashCalculatorFnArnCustomResourceCustomResourcePolicyA824D17F",
       ],
       "Properties": {
-        "Create": "{"service":"SSM","action":"getParameter","parameters":{"Name":"/event-store-adapter-rs-sample/contents-hash-calculator-fn-arn"},"physicalResourceId":{"id":"PhysicalResourceId-1754382633001"},"region":"us-east-1"}",
+        "Create": "{"service":"SSM","action":"getParameter","parameters":{"Name":"/event-store-adapter-rs-sample/contents-hash-calculator-fn-arn"},"physicalResourceId":{"id":"PhysicalResourceId-REPLACED"},"region":"us-east-1"}",
         "InstallLatestAwsSdk": true,
         "ServiceToken": {
           "Fn::GetAtt": [
@@ -454,7 +454,7 @@ exports[`Snapshot test 1`] = `
             "Arn",
           ],
         },
-        "Update": "{"service":"SSM","action":"getParameter","parameters":{"Name":"/event-store-adapter-rs-sample/contents-hash-calculator-fn-arn"},"physicalResourceId":{"id":"PhysicalResourceId-1754382633001"},"region":"us-east-1"}",
+        "Update": "{"service":"SSM","action":"getParameter","parameters":{"Name":"/event-store-adapter-rs-sample/contents-hash-calculator-fn-arn"},"physicalResourceId":{"id":"PhysicalResourceId-REPLACED"},"region":"us-east-1"}",
       },
       "Type": "Custom::AWS",
       "UpdateReplacePolicy": "Delete",
@@ -469,8 +469,8 @@ exports[`Snapshot test 1`] = `
     const authString = REPLACED;
     
     if (
-        typeof headers["x-custom-authorization"] === "undefined" ||
-        headers["x-custom-authorization"].value !== authString
+        typeof headers["x-custom-hippo-key"] === "undefined" ||
+        headers["x-custom-hippo-key"].value !== authString
     ) {
         return {
             statusCode: 401,
@@ -508,7 +508,7 @@ exports[`Snapshot test 1`] = `
             "AttributeType": "N",
           },
         ],
-        "BillingMode": "PROVISIONED",
+        "BillingMode": "PAY_PER_REQUEST",
         "GlobalSecondaryIndexes": [
           {
             "IndexName": "Dev01-journal-aid-index",
@@ -524,15 +524,6 @@ exports[`Snapshot test 1`] = `
             ],
             "Projection": {
               "ProjectionType": "ALL",
-            },
-            "WriteProvisionedThroughputSettings": {
-              "WriteCapacityAutoScalingSettings": {
-                "MaxCapacity": 10,
-                "MinCapacity": 1,
-                "TargetTrackingScalingPolicyConfiguration": {
-                  "TargetValue": 70,
-                },
-              },
             },
           },
         ],
@@ -551,41 +542,14 @@ exports[`Snapshot test 1`] = `
             "GlobalSecondaryIndexes": [
               {
                 "IndexName": "Dev01-journal-aid-index",
-                "ReadProvisionedThroughputSettings": {
-                  "ReadCapacityAutoScalingSettings": {
-                    "MaxCapacity": 10,
-                    "MinCapacity": 1,
-                    "TargetTrackingScalingPolicyConfiguration": {
-                      "TargetValue": 70,
-                    },
-                  },
-                },
               },
             ],
-            "ReadProvisionedThroughputSettings": {
-              "ReadCapacityAutoScalingSettings": {
-                "MaxCapacity": 10,
-                "MinCapacity": 1,
-                "TargetTrackingScalingPolicyConfiguration": {
-                  "TargetValue": 70,
-                },
-              },
-            },
             "Region": "ap-northeast-1",
             "TableClass": "STANDARD_INFREQUENT_ACCESS",
           },
         ],
         "StreamSpecification": {
           "StreamViewType": "NEW_IMAGE",
-        },
-        "WriteProvisionedThroughputSettings": {
-          "WriteCapacityAutoScalingSettings": {
-            "MaxCapacity": 10,
-            "MinCapacity": 1,
-            "TargetTrackingScalingPolicyConfiguration": {
-              "TargetValue": 70,
-            },
-          },
         },
       },
       "Type": "AWS::DynamoDB::GlobalTable",
@@ -612,7 +576,7 @@ exports[`Snapshot test 1`] = `
             "AttributeType": "N",
           },
         ],
-        "BillingMode": "PROVISIONED",
+        "BillingMode": "PAY_PER_REQUEST",
         "GlobalSecondaryIndexes": [
           {
             "IndexName": "Dev01-snapshot-aid-index",
@@ -628,15 +592,6 @@ exports[`Snapshot test 1`] = `
             ],
             "Projection": {
               "ProjectionType": "ALL",
-            },
-            "WriteProvisionedThroughputSettings": {
-              "WriteCapacityAutoScalingSettings": {
-                "MaxCapacity": 10,
-                "MinCapacity": 1,
-                "TargetTrackingScalingPolicyConfiguration": {
-                  "TargetValue": 70,
-                },
-              },
             },
           },
         ],
@@ -655,39 +610,12 @@ exports[`Snapshot test 1`] = `
             "GlobalSecondaryIndexes": [
               {
                 "IndexName": "Dev01-snapshot-aid-index",
-                "ReadProvisionedThroughputSettings": {
-                  "ReadCapacityAutoScalingSettings": {
-                    "MaxCapacity": 10,
-                    "MinCapacity": 1,
-                    "TargetTrackingScalingPolicyConfiguration": {
-                      "TargetValue": 70,
-                    },
-                  },
-                },
               },
             ],
-            "ReadProvisionedThroughputSettings": {
-              "ReadCapacityAutoScalingSettings": {
-                "MaxCapacity": 10,
-                "MinCapacity": 1,
-                "TargetTrackingScalingPolicyConfiguration": {
-                  "TargetValue": 70,
-                },
-              },
-            },
             "Region": "ap-northeast-1",
             "TableClass": "STANDARD_INFREQUENT_ACCESS",
           },
         ],
-        "WriteProvisionedThroughputSettings": {
-          "WriteCapacityAutoScalingSettings": {
-            "MaxCapacity": 10,
-            "MinCapacity": 1,
-            "TargetTrackingScalingPolicyConfiguration": {
-              "TargetValue": 70,
-            },
-          },
-        },
       },
       "Type": "AWS::DynamoDB::GlobalTable",
       "UpdateReplacePolicy": "Delete",
