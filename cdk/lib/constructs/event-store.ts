@@ -20,10 +20,7 @@ export class EventStore extends Construct {
       partitionKey: { name: "pkey", type: dynamodb.AttributeType.STRING },
       sortKey: { name: "skey", type: dynamodb.AttributeType.STRING },
       tableClass: dynamodb.TableClass.STANDARD_INFREQUENT_ACCESS,
-      billing: dynamodb.Billing.provisioned({
-        writeCapacity: dynamodb.Capacity.autoscaled({ maxCapacity: 10 }),
-        readCapacity: dynamodb.Capacity.autoscaled({ maxCapacity: 10 }),
-      }),
+      billing: dynamodb.Billing.onDemand(),
       dynamoStream: dynamodb.StreamViewType.NEW_IMAGE,
       removalPolicy: RemovalPolicy.DESTROY,
     });
@@ -33,8 +30,6 @@ export class EventStore extends Construct {
       partitionKey: { name: "aid", type: dynamodb.AttributeType.STRING },
       sortKey: { name: "seq_nr", type: dynamodb.AttributeType.NUMBER },
       projectionType: dynamodb.ProjectionType.ALL,
-      writeCapacity: dynamodb.Capacity.autoscaled({ maxCapacity: 10 }),
-      readCapacity: dynamodb.Capacity.autoscaled({ maxCapacity: 10 }),
     });
 
     //
@@ -44,10 +39,7 @@ export class EventStore extends Construct {
       partitionKey: { name: "pkey", type: dynamodb.AttributeType.STRING },
       sortKey: { name: "skey", type: dynamodb.AttributeType.STRING },
       tableClass: dynamodb.TableClass.STANDARD_INFREQUENT_ACCESS,
-      billing: dynamodb.Billing.provisioned({
-        readCapacity: dynamodb.Capacity.autoscaled({ maxCapacity: 10 }),
-        writeCapacity: dynamodb.Capacity.autoscaled({ maxCapacity: 10 }),
-      }),
+      billing: dynamodb.Billing.onDemand(),
       removalPolicy: RemovalPolicy.DESTROY,
     });
 
@@ -56,8 +48,6 @@ export class EventStore extends Construct {
       partitionKey: { name: "aid", type: dynamodb.AttributeType.STRING },
       sortKey: { name: "seq_nr", type: dynamodb.AttributeType.NUMBER },
       projectionType: dynamodb.ProjectionType.ALL,
-      writeCapacity: dynamodb.Capacity.autoscaled({ maxCapacity: 10 }),
-      readCapacity: dynamodb.Capacity.autoscaled({ maxCapacity: 10 }),
     });
 
     this.journalTable = journalTable;
