@@ -7,6 +7,7 @@ use command_domain::user::UserId;
 use command_interface_adaptor_if::ProjectRepositoryError;
 use command_processor::project_command_processor::CommandProcessError;
 
+use crate::controllers::extractor::AuthorizedUser;
 use crate::gateways::project_repository::AwsDynamoDbProjectRepository;
 use crate::graphql::inputs::{
     AddMemberInput, CreateProjectInput, DeleteProjectInput, RemoveMemberInput, RenameProjectInput,
@@ -18,13 +19,13 @@ use crate::graphql::{ES, MutationRoot, ServiceContext};
 impl MutationRoot {
     async fn create_project(&self, ctx: &Context<'_>, input: CreateProjectInput) -> FieldResult<ProjectOut> {
         let service_ctx = ctx.data::<ServiceContext<AwsDynamoDbProjectRepository<ES>>>().unwrap();
+        let authorized_user = ctx.data::<AuthorizedUser>()?;
 
         let project_name = validate_project_name(&input.name)?;
-        let executor_id = validate_user_id(&input.executor_id)?;
 
         let mut processor = service_ctx.project_command_processor.lock().await;
         processor
-            .create_project(project_name, executor_id)
+            .create_project(project_name, authorized_user.user_id.clone())
             .await
             .map(|project_id| ProjectOut::new(project_id.to_string()))
             .map_err(error_handling)
@@ -32,13 +33,13 @@ impl MutationRoot {
 
     async fn delete_project(&self, ctx: &Context<'_>, input: DeleteProjectInput) -> FieldResult<ProjectOut> {
         let service_ctx = ctx.data::<ServiceContext<AwsDynamoDbProjectRepository<ES>>>().unwrap();
+        let authorized_user = ctx.data::<AuthorizedUser>()?;
 
         let project_id = validate_project_id(&input.project_id)?;
-        let executor_id = validate_user_id(&input.executor_id)?;
 
         let mut processor = service_ctx.project_command_processor.lock().await;
         processor
-            .delete_project(project_id, executor_id)
+            .delete_project(project_id, authorized_user.user_id.clone())
             .await
             .map(|project_id| ProjectOut::new(project_id.to_string()))
             .map_err(error_handling)
@@ -46,15 +47,15 @@ impl MutationRoot {
 
     async fn add_member(&self, ctx: &Context<'_>, input: AddMemberInput) -> FieldResult<ProjectOut> {
         let service_ctx = ctx.data::<ServiceContext<AwsDynamoDbProjectRepository<ES>>>().unwrap();
+        let authorized_user = ctx.data::<AuthorizedUser>()?;
 
         let project_id = validate_project_id(&input.project_id)?;
         let user_id = validate_user_id(&input.user_id)?;
         let role = validate_member_role(&input.role)?;
-        let executor_id = validate_user_id(&input.executor_id)?;
 
         let mut processor = service_ctx.project_command_processor.lock().await;
         processor
-            .add_member(project_id, user_id, role, executor_id)
+            .add_member(project_id, user_id, role, authorized_user.user_id.clone())
             .await
             .map(|project_id| ProjectOut::new(project_id.to_string()))
             .map_err(error_handling)
@@ -62,15 +63,15 @@ impl MutationRoot {
 
     async fn remove_member(&self, ctx: &Context<'_>, input: RemoveMemberInput) -> FieldResult<ProjectOut> {
         let service_ctx = ctx.data::<ServiceContext<AwsDynamoDbProjectRepository<ES>>>().unwrap();
+        let authorized_user = ctx.data::<AuthorizedUser>()?;
 
         let project_id = validate_project_id(&input.project_id)?;
         let user_id = validate_user_id(&input.user_id)?;
-        let executor_id = validate_user_id(&input.executor_id)?;
 
         let mut processor = service_ctx.project_command_processor.lock().await;
 
         processor
-            .remove_member(project_id, user_id, executor_id)
+            .remove_member(project_id, user_id, authorized_user.user_id.clone())
             .await
             .map(|project_id| ProjectOut::new(project_id.to_string()))
             .map_err(error_handling)
@@ -78,14 +79,14 @@ impl MutationRoot {
 
     async fn rename_project(&self, ctx: &Context<'_>, input: RenameProjectInput) -> FieldResult<ProjectOut> {
         let service_ctx = ctx.data::<ServiceContext<AwsDynamoDbProjectRepository<ES>>>().unwrap();
+        let authorized_user = ctx.data::<AuthorizedUser>()?;
 
         let project_id = validate_project_id(&input.project_id)?;
         let new_name = validate_project_name(&input.new_name)?;
-        let executor_id = validate_user_id(&input.executor_id)?;
 
         let mut processor = service_ctx.project_command_processor.lock().await;
         processor
-            .rename_project(project_id, new_name, executor_id)
+            .rename_project(project_id, new_name, authorized_user.user_id.clone())
             .await
             .map(|project_id| ProjectOut::new(project_id.to_string()))
             .map_err(error_handling)
