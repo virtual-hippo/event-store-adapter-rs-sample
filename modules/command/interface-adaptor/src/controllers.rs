@@ -9,6 +9,8 @@ use crate::gateways::project_repository::AwsDynamoDbProjectRepository;
 
 use crate::graphql::{ApiSchema, ES, create_schema};
 
+pub(crate) mod extractor;
+
 pub enum EndpointPaths {
     Root,
     HealthAlive,
@@ -40,8 +42,12 @@ pub async fn ready() -> impl IntoResponse {
 }
 
 /// GraphQLのリクエストを受け付けるエンドポイント。
-async fn graphql_handler(schema: Extension<ApiSchema>, req: GraphQLRequest) -> GraphQLResponse {
-    schema.execute(req.into_inner()).await.into()
+async fn graphql_handler(
+    schema: Extension<ApiSchema>,
+    authorized_user: extractor::AuthorizedUser,
+    req: GraphQLRequest,
+) -> GraphQLResponse {
+    schema.execute(req.into_inner().data(authorized_user)).await.into()
 }
 
 /// GraphQL IDEのためのエンドポイント。

@@ -77,8 +77,25 @@ async fn main() -> Result<(), Error> {
     );
     let repository = AwsDynamoDbProjectRepository::new(egg, app_settings.persistence.snapshot_interval);
 
-    let router = create_router(repository).layer(create_cors_layer(&app_settings));
+    let router = create_router(repository)
+        .layer(create_cors_layer(&app_settings))
+        .layer(axum::middleware::from_fn(access_log_on_request));
     run(router).await
+}
+
+async fn access_log_on_request(
+    req: axum::http::Request<axum::body::Body>,
+    next: axum::middleware::Next,
+) -> Result<axum::response::Response, axum::http::StatusCode> {
+    let headers = req
+        .headers()
+        .iter()
+        .map(|(k, v)| format!("({}: {})", k.as_str(), v.to_str().unwrap_or("")))
+        .collect::<Vec<_>>()
+        .join(", ");
+    tracing::info!("Request Headers: {}", headers);
+
+    Ok(next.run(req).await)
 }
 
 fn create_cors_layer(app_settings: &AppSettings) -> CorsLayer {

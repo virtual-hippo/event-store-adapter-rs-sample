@@ -14,6 +14,7 @@ command-interface-adaptor-if = { path = "../interface-adaptor-if" }
 command-processor = { path = "../processor" }
 command-domain = { path = "../domain" }
 downcast-rs = { workspace = true }
+jsonwebtoken = { workspace = true }
 log = { workspace = true }
 once_cell = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
@@ -24,4 +25,5 @@ event-store-adapter-rs = { workspace = true }
 async-graphql = { workspace = true, features = ["chrono"] }
 
 axum = { workspace = true }
+axum-extra = { workspace = true, features = ["typed-header"] }
 async-graphql-axum = { workspace = true }
